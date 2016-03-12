@@ -5,3 +5,5 @@ Metrics/LineLength:
   Max: 100
   AllowURI: true
 
+Style/Documentation:
+  Enabled: false
