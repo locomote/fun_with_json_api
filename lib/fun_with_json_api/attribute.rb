@@ -24,8 +24,12 @@ module FunWithJsonApi
       value
     end
 
-    def inspect
-      "#<#{self.class.name}{name:#{name},as:#{as}}>"
+    def sanitize_attribute_method
+      :"parse_#{param_value}"
+    end
+
+    def param_value
+      as.to_sym
     end
   end
 end

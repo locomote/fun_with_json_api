@@ -1,71 +1,70 @@
 require 'active_support/inflector'
 require 'fun_with_json_api/attribute'
+require 'fun_with_json_api/deserializer_class_methods'
 
 module FunWithJsonApi
   class Deserializer
-    class << self
-      def create(options = {})
-        new(options)
-      end
+    extend FunWithJsonApi::DeserializerClassMethods
 
-      def id_param(id_param = nil)
-        @id_param = id_param if id_param
-        @id_param
-      end
-
-      def attribute(name, options = {})
-        Attribute.create(name, options).tap do |attribute|
-          define_method attribute.as do |value|
-            attribute.call(value)
-          end
-          attributes << attribute
-        end
-      end
-
-      def attributes
-        @attributes ||= []
-      end
-
-      def belongs_to(name, type: nil, polymorphic: false)
-        # type = !polymorphic && (type || model_type_from_name(name))
-      end
-
-      # rubocop:disable Style/PredicateName
-
-      def has_many(name, type: nil)
-        # puts FunWithJsonApi::Attributes::RelationshipsAttribute.new(name).inspect
-      end
-
-      # rubocop:enable Style/PredicateName
+    # Creates a new instance of a
+    def self.create(options = {})
+      new(options)
     end
 
     # Use DeserializerClass.create to build new instances
     private_class_method :new
 
     attr_reader :id_param
+    attr_reader :type
+    attr_reader :resource_class
+
     attr_reader :attributes
+    attr_reader :relationships
 
     def initialize(options = {})
       @id_param = options.fetch(:id_param) { self.class.id_param }
-      @attributes = self.class.attributes
-      if options[:attributes]
-        @attributes = @attributes.keep_if { |attr| options[:attributes].include?(attr.name) }
-      end
+      @type = options[:type]
+      @resource_class = options[:resource_class]
+      @attributes = filter_attributes_by_name(options[:attributes], self.class.attributes)
+      @relationships = filter_attributes_by_name(options[:relationships], self.class.relationships)
     end
 
     # Takes a parsed params hash from ActiveModelSerializers::Deserialization and sanitizes values
     def sanitize_params(params)
       Hash[
-        attribute_params(params)
+        serialize_attribute_values(attributes, params) +
+        serialize_attribute_values(relationships, params)
       ]
+    end
+
+    def type
+      @type ||= self.class.type
+    end
+
+    def resource_class
+      @resource_class ||= self.class.resource_class
     end
 
     private
 
+    def filter_attributes_by_name(attribute_names, attributes)
+      if attribute_names
+        attributes.keep_if { |attribute| attribute_names.include?(attribute.name) }
+      else
+        attributes
+      end
+    end
+
     # Calls <attribute.as> on the current instance, override the #<as> method to change loading
-    def attribute_params(params)
-      attributes.map(&:as).select { |attribute| params.key?(attribute) }
-                .map { |attribute| [attribute, public_send(attribute, params.fetch(attribute))] }
+    def serialize_attribute_values(attributes, params)
+      attributes.select { |attribute| params.key?(attribute.param_value) }
+                .map { |attribute| serialize_attribute(attribute, params) }
+    end
+
+    # Calls <attribute.as> on the current instance, override the #<as> method to change loading
+    def serialize_attribute(attribute, params)
+      raw_value = params.fetch(attribute.param_value)
+      [attribute.param_value, public_send(attribute.sanitize_attribute_method, raw_value)]
     end
   end
 end

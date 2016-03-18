@@ -12,4 +12,44 @@ describe FunWithJsonApi do
     /x
     expect(FunWithJsonApi::VERSION).to match(version_regex)
   end
+
+  describe '.deserialize' do
+    context 'with an PostDeserializer' do
+      it 'should convert a json api to post params' do
+        ARModels::Author.create(id: 9)
+        ARModels::Comment.create(id: 5)
+        ARModels::Comment.create(id: 12)
+
+        post_json = {
+          'data': {
+            'type': 'posts',
+            'id': '1',
+            'attributes': {
+              'title': 'Rails is Omakase',
+              'body': 'This is my post body'
+            },
+            'relationships': {
+              'author': {
+                'data': { 'type': 'people', 'id': '9' }
+              },
+              'comments': {
+                'data': [
+                  { 'type': 'comments', 'id': '5' },
+                  { 'type': 'comments', 'id': '12' }
+                ]
+              }
+            }
+          }
+        }
+
+        post_params = FunWithJsonApi.deserialize(post_json, ARModels::PostDeserializer)
+        expect(post_params).to eq(
+          title: 'Rails is Omakase',
+          body: 'This is my post body',
+          author_id: 9,
+          comment_ids: [5, 12]
+        )
+      end
+    end
+  end
 end
