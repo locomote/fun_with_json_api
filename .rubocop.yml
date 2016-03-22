@@ -7,3 +7,7 @@ Metrics/LineLength:
 
 Style/Documentation:
   Enabled: false
+
+Style/MultilineBlockChain:
+  Exclude:
+    - 'spec/fun_with_json_api/pre_deserializer_spec.rb'

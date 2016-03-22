@@ -1,0 +1,4 @@
+en:
+  fun_with_json_api:
+    exceptions:
+      invalid_document: 'Request json_api document is invalid'
