@@ -1,3 +1,5 @@
+require 'fun_with_json_api/controller_methods'
+
 module FunWithJsonApi
   # Mountable engine for fun with json_api
   class Railtie < Rails::Railtie

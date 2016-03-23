@@ -1,3 +1,5 @@
+require 'active_model_serializers/model'
+
 module FunWithJsonApi
   # id: a unique identifier for this particular occurrence of the problem.
   # links: a links object containing the following members:
@@ -14,5 +16,14 @@ module FunWithJsonApi
   #  [e.g. "/data" for a primary data object, or "/data/attributes/title" for a specific attribute].
   #  parameter: a string indicating which URI query parameter caused the error.
   #  meta: a meta object containing non-standard meta-information about the error.
-  ExceptionPayload = Struct.new(:id, :status, :code, :title, :detail, :pointer, :parameter)
+  class ExceptionPayload < ActiveModelSerializers::Model
+    [:id, :status, :code, :title, :detail, :pointer, :parameter].each do |param|
+      define_method param do
+        attributes[param]
+      end
+      define_method "#{param}=" do |value|
+        attributes[param] = value
+      end
+    end
+  end
 end
