@@ -26,7 +26,7 @@ module FunWithJsonApi
       # Expects an array of id values for a nested collection
       def call(values)
         unless values.nil? || values.is_a?(Array)
-          raise StandardError, "should be an array of #{type} resources!"
+          raise build_invalid_relationship_collection_error(values)
         end
 
         collection = resource_class.where(id_param => values)
@@ -35,7 +35,7 @@ module FunWithJsonApi
         expected_size = values.size
         result_size = collection.size
         if result_size != expected_size
-          raise StandardError, "Expected #{expected_size} values, received #{result_size} items"
+          raise build_missing_relationship_error_from_collection(collection, values)
         end
 
         # Call ActiceRecord#pluck if it is available
@@ -67,6 +67,32 @@ module FunWithJsonApi
           attributes: [],
           relationships: []
         )
+      end
+
+      def build_invalid_relationship_collection_error(values)
+        exception_message = "#{name} relationship should contain a array of '#{type}' data"
+        payload = ExceptionPayload.new
+        payload.pointer = "/data/relationships/#{name}"
+        payload.detail = exception_message
+        Exceptions::InvalidRelationship.new(exception_message + ": #{values.inspect}", payload)
+      end
+
+      def build_missing_relationship_error_from_collection(collection, values)
+        collection_values = collection.map { |resource| resource.public_send(id_param).to_s }
+        missing_values = values.reject { |value| collection_values.include?(value.to_s) }
+        payload = missing_values.map do |value|
+          build_missing_relationship_payload(value)
+        end
+        exception_message = "Couldn't find #{resource_class} items with "\
+                            "#{id_param} in #{missing_values.inspect}"
+        Exceptions::MissingRelationship.new(exception_message, payload)
+      end
+
+      def build_missing_relationship_payload(value)
+        ExceptionPayload.new.tap do |payload|
+          payload.pointer = "/data/relationships/#{name}/id"
+          payload.detail = "Unable to find '#{type}' with matching id: #{value.inspect}"
+        end
       end
     end
   end
