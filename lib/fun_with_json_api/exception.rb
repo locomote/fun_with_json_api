@@ -8,6 +8,18 @@ module FunWithJsonApi
       super(message)
       @payload = Array.wrap(payload)
     end
+
+    # @return [Integer] The http status code for rendering this error
+    def http_status
+      payload_statuses = payload.map(&:status).uniq
+      if payload_statuses.length == 1
+        Integer(payload_statuses.first || '400') # Return the unique status code
+      elsif payload_statuses.any? { |status| status.starts_with?('5') }
+        500 # We have a server error
+      else
+        400 # Bad Request
+      end
+    end
   end
 end
 
