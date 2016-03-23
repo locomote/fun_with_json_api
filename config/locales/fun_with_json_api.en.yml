@@ -2,5 +2,12 @@ en:
   fun_with_json_api:
     exceptions:
       invalid_document: 'Request json_api document is invalid'
+      invalid_attribute: 'Request json_api document attribute is invalid'
       invalid_relationship: 'Request json_api document relationship is invalid'
       missing_relationship: 'Unable to find the requested relationship'
+      invalid_boolean_attribute: "Boolean value should only be true, false, or null"
+      invalid_date_attribute: "Date value should be in the format YYYY-MM-DD"
+      invalid_datetime_attribute: "Datetime value should be a ISO 8601 datetime"
+      invalid_decimal_attribute: "Decimal value must be a decimal number (i.e. 123.45)"
+      invalid_float_attribute: "Float value must be a floating point number (i.e. 123.45)"
+      invalid_integer_attribute: "Integer value must be a integer number (i.e. 123)"

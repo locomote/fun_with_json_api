@@ -7,7 +7,17 @@ module FunWithJsonApi
         return nil if value.nil?
         return value if value.is_a?(TrueClass) || value.is_a?(FalseClass)
 
-        raise ArgumentError, "#{value.inspect} should only be boolean true, false, or null"
+        raise build_invalid_attribute_error(value)
+      end
+
+      private
+
+      def build_invalid_attribute_error(value)
+        exception_message = I18n.t('fun_with_json_api.exceptions.invalid_boolean_attribute')
+        payload = ExceptionPayload.new
+        payload.detail = exception_message
+        payload.pointer = "/data/attributes/#{name}"
+        Exceptions::InvalidAttribute.new(exception_message + ": #{value.inspect}", payload)
       end
     end
   end

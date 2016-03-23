@@ -70,10 +70,25 @@ describe FunWithJsonApi::Deserializer do
         deserializer = deserializer_with_attribute(:example, format: :boolean)
         expect(deserializer.parse_example(nil)).to be nil
       end
-      it 'should raise an ArgumentError for invalid boolean values' do
+      it 'should raise an InvalidAttribute for invalid boolean values' do
         deserializer = deserializer_with_attribute(:example, format: :boolean)
         ['true', 'True', 'TRUE', 1, 'false', 'False', 'FALSE', 0].each do |value|
-          expect { deserializer.parse_example(value) }.to raise_error(ArgumentError)
+          expect do
+            deserializer.parse_example(value)
+          end.to raise_error(FunWithJsonApi::Exceptions::InvalidAttribute) do |e|
+            expect(e.payload.size).to eq 1
+
+            payload = e.payload.first
+            expect(payload.status).to eq '400'
+            expect(payload.code).to eq 'invalid_attribute'
+            expect(payload.title).to eq(
+              I18n.t('fun_with_json_api.exceptions.invalid_attribute')
+            )
+            expect(payload.detail).to eq(
+              I18n.t('fun_with_json_api.exceptions.invalid_boolean_attribute')
+            )
+            expect(payload.pointer).to eq '/data/attributes/example'
+          end
         end
       end
     end
@@ -87,10 +102,25 @@ describe FunWithJsonApi::Deserializer do
         deserializer = deserializer_with_attribute(:example, format: :date)
         expect(deserializer.parse_example(nil)).to be nil
       end
-      it 'should raise an ArgumentError for invalid date value' do
+      it 'should raise an InvalidAttribute for invalid date value' do
         deserializer = deserializer_with_attribute(:example, format: :date)
         ['2016-12', 'Last Wednesday', 'April'].each do |value|
-          expect { deserializer.parse_example(value) }.to raise_error(ArgumentError)
+          expect do
+            deserializer.parse_example(value)
+          end.to raise_error(FunWithJsonApi::Exceptions::InvalidAttribute) do |e|
+            expect(e.payload.size).to eq 1
+
+            payload = e.payload.first
+            expect(payload.status).to eq '400'
+            expect(payload.code).to eq 'invalid_attribute'
+            expect(payload.title).to eq(
+              I18n.t('fun_with_json_api.exceptions.invalid_attribute')
+            )
+            expect(payload.detail).to eq(
+              I18n.t('fun_with_json_api.exceptions.invalid_date_attribute')
+            )
+            expect(payload.pointer).to eq '/data/attributes/example'
+          end
         end
       end
     end
@@ -113,18 +143,41 @@ describe FunWithJsonApi::Deserializer do
         deserializer = deserializer_with_attribute(:example, format: :datetime)
         expect(deserializer.parse_example(nil)).to be nil
       end
-      it 'should raise an ArgumentError for invalid date value' do
+      it 'should raise an InvalidAttribute for invalid date value' do
         deserializer = deserializer_with_attribute(:example, format: :datetime)
         [
           'Last Wednesday',
           'April'
         ].each do |value|
-          expect { deserializer.parse_example(value) }.to raise_error(ArgumentError)
+          expect do
+            deserializer.parse_example(value)
+          end.to raise_error(FunWithJsonApi::Exceptions::InvalidAttribute) do |e|
+            expect(e.payload.size).to eq 1
+
+            payload = e.payload.first
+            expect(payload.status).to eq '400'
+            expect(payload.code).to eq 'invalid_attribute'
+            expect(payload.title).to eq(
+              I18n.t('fun_with_json_api.exceptions.invalid_attribute')
+            )
+            expect(payload.detail).to eq(
+              I18n.t('fun_with_json_api.exceptions.invalid_datetime_attribute')
+            )
+            expect(payload.pointer).to eq '/data/attributes/example'
+          end
         end
       end
     end
 
     context 'with a decimal format' do
+      it 'should allow integers' do
+        deserializer = deserializer_with_attribute(:example, format: :decimal)
+        expect(deserializer.parse_example(12)).to eq BigDecimal.new('12')
+      end
+      it 'should allow floats' do
+        deserializer = deserializer_with_attribute(:example, format: :decimal)
+        expect(deserializer.parse_example(12.34)).to eq BigDecimal.new('12.34')
+      end
       it 'should allow integer numbers as strings' do
         deserializer = deserializer_with_attribute(:example, format: :decimal)
         expect(deserializer.parse_example('12')).to eq BigDecimal.new('12')
@@ -137,19 +190,38 @@ describe FunWithJsonApi::Deserializer do
         deserializer = deserializer_with_attribute(:example, format: :decimal)
         expect(deserializer.parse_example(nil)).to be nil
       end
-      xit 'should raise an ArgumentError for invalid decimal value' do
+      it 'should raise an InvalidAttribute for invalid decimal value' do
         deserializer = deserializer_with_attribute(:example, format: :decimal)
         [
           'twelve',
           '-',
           'abc'
         ].each do |value|
-          expect { deserializer.parse_example(value) }.to raise_error(ArgumentError)
+          expect do
+            deserializer.parse_example(value)
+          end.to raise_error(FunWithJsonApi::Exceptions::InvalidAttribute) do |e|
+            expect(e.payload.size).to eq 1
+
+            payload = e.payload.first
+            expect(payload.status).to eq '400'
+            expect(payload.code).to eq 'invalid_attribute'
+            expect(payload.title).to eq(
+              I18n.t('fun_with_json_api.exceptions.invalid_attribute')
+            )
+            expect(payload.detail).to eq(
+              I18n.t('fun_with_json_api.exceptions.invalid_decimal_attribute')
+            )
+            expect(payload.pointer).to eq '/data/attributes/example'
+          end
         end
       end
     end
 
     context 'with a float format' do
+      it 'should allow floats' do
+        deserializer = deserializer_with_attribute(:example, format: :float)
+        expect(deserializer.parse_example(12.34)).to eq 12.34
+      end
       it 'should allow float numbers as strings' do
         deserializer = deserializer_with_attribute(:example, format: :float)
         expect(deserializer.parse_example('12.34')).to eq 12.34
@@ -162,14 +234,29 @@ describe FunWithJsonApi::Deserializer do
         deserializer = deserializer_with_attribute(:example, format: :float)
         expect(deserializer.parse_example(nil)).to be nil
       end
-      it 'should raise an ArgumentError for invalid float value' do
+      it 'should raise an InvalidAttribute for invalid float value' do
         deserializer = deserializer_with_attribute(:example, format: :float)
         [
           'twelve',
           '-',
           'abc'
         ].each do |value|
-          expect { deserializer.parse_example(value) }.to raise_error(ArgumentError)
+          expect do
+            deserializer.parse_example(value)
+          end.to raise_error(FunWithJsonApi::Exceptions::InvalidAttribute) do |e|
+            expect(e.payload.size).to eq 1
+
+            payload = e.payload.first
+            expect(payload.status).to eq '400'
+            expect(payload.code).to eq 'invalid_attribute'
+            expect(payload.title).to eq(
+              I18n.t('fun_with_json_api.exceptions.invalid_attribute')
+            )
+            expect(payload.detail).to eq(
+              I18n.t('fun_with_json_api.exceptions.invalid_float_attribute')
+            )
+            expect(payload.pointer).to eq '/data/attributes/example'
+          end
         end
       end
     end
@@ -183,15 +270,31 @@ describe FunWithJsonApi::Deserializer do
         deserializer = deserializer_with_attribute(:example, format: :integer)
         expect(deserializer.parse_example(nil)).to be nil
       end
-      it 'should raise an ArgumentError for invalid integer value' do
+      it 'should raise an InvalidAttribute for invalid integer value' do
         deserializer = deserializer_with_attribute(:example, format: :integer)
         [
+          12.0,
           '12.0',
           'twelve',
           '-',
           'abc'
         ].each do |value|
-          expect { deserializer.parse_example(value) }.to raise_error(ArgumentError)
+          expect do
+            deserializer.parse_example(value)
+          end.to raise_error(FunWithJsonApi::Exceptions::InvalidAttribute) do |e|
+            expect(e.payload.size).to eq 1
+
+            payload = e.payload.first
+            expect(payload.status).to eq '400'
+            expect(payload.code).to eq 'invalid_attribute'
+            expect(payload.title).to eq(
+              I18n.t('fun_with_json_api.exceptions.invalid_attribute')
+            )
+            expect(payload.detail).to eq(
+              I18n.t('fun_with_json_api.exceptions.invalid_integer_attribute')
+            )
+            expect(payload.pointer).to eq '/data/attributes/example'
+          end
         end
       end
     end
