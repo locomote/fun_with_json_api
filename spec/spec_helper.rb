@@ -4,6 +4,8 @@ SimpleCov.start
 
 ENV['RAILS_ENV'] ||= 'test'
 
+require File.expand_path('../dummy/config/environment.rb', __FILE__)
+
 require 'rails'
 require 'action_controller'
 require 'action_controller/test_case'
