@@ -10,6 +10,7 @@ ActiveRecord::Schema.define do
   end
   create_table :authors, force: true do |t|
     t.string :name
+    t.string :code
     t.timestamps null: false
   end
   create_table :comments, force: true do |t|

@@ -2,3 +2,5 @@ en:
   fun_with_json_api:
     exceptions:
       invalid_document: 'Request json_api document is invalid'
+      invalid_relationship: 'Request json_api document relationship is invalid'
+      missing_relationship: 'Unable to find the requested relationship'

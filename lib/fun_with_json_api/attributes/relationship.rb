@@ -26,10 +26,12 @@ module FunWithJsonApi
 
       def call(id_value)
         unless id_value.nil? || !id_value.is_a?(Array)
-          raise StandardError, "should be a single '#{type} resource!"
+          raise build_invalid_relationship_error(id_value)
         end
 
         resource_class.find_by!(id_param => id_value).try(:id) if id_value
+      rescue ActiveRecord::RecordNotFound => e
+        raise convert_record_not_found_error(e, id_value)
       end
 
       def param_value
@@ -48,6 +50,23 @@ module FunWithJsonApi
           attributes: [],
           relationships: []
         )
+      end
+
+      def build_invalid_relationship_error(id_value)
+        exception_message = "#{name} relationship should contain a single '#{type}' data hash"
+        payload = ExceptionPayload.new
+        payload.pointer = "/data/relationships/#{name}"
+        payload.detail = exception_message
+        Exceptions::InvalidRelationship.new(exception_message + ": #{id_value.inspect}", payload)
+      end
+
+      def convert_record_not_found_error(exception, id_value)
+        payload = ExceptionPayload.new
+        payload.pointer = "/data/relationships/#{name}/id"
+        payload.detail = "Unable to find '#{type}' with matching id: #{id_value.inspect}"
+        exception_message = "Couldn't find #{resource_class} where "\
+                            "#{id_param} = #{id_value.inspect}: #{exception.message}"
+        Exceptions::MissingRelationship.new(exception_message, payload)
       end
     end
   end

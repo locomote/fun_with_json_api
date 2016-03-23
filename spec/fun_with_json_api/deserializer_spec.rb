@@ -13,6 +13,16 @@ def deserializer_class_with_attribute(attribute, attribute_options = {})
   end
 end
 
+def deserializer_class_with_relationship(relationship, relationship_type, relationship_options = {})
+  relationship_deserializer = Class.new(FunWithJsonApi::Deserializer) do
+    type(relationship_type)
+  end
+
+  Class.new(FunWithJsonApi::Deserializer) do
+    belongs_to relationship, relationship_deserializer, relationship_options
+  end
+end
+
 # Returns an instance of a FunWithJsonApi::Deserializer with an attribute with an assigned value
 #
 # Equivalent of:
@@ -196,6 +206,59 @@ describe FunWithJsonApi::Deserializer do
       expect do
         deserializer_class_with_attribute('', format: :string)
       end.to raise_error(ArgumentError)
+    end
+  end
+
+  describe '#parse_{relationship}_id' do
+    context 'with a ARModels::Author relationship with a "code" id param' do
+      let(:deserializer) do
+        author_deserializer_class = Class.new(FunWithJsonApi::Deserializer) do
+          id_param 'code'
+          type 'persons'
+          resource_class ARModels::Author
+        end
+
+        # Build the Deserializer
+        Class.new(FunWithJsonApi::Deserializer) do
+          belongs_to :example, author_deserializer_class
+        end.create
+      end
+
+      it 'finds a resource by the defined id_param and returns the resource id' do
+        author = ARModels::Author.create(id: 1, code: 'foobar')
+        expect(deserializer.parse_example_id('foobar')).to eq author.id
+      end
+
+      it 'raises a MissingRelationship when unable to find the resource' do
+        expect do
+          deserializer.parse_example_id 'foobar'
+        end.to raise_error(FunWithJsonApi::Exceptions::MissingRelationship) do |e|
+          expect(e.message).to start_with "Couldn't find ARModels::Author where code = \"foobar\": "
+          expect(e.payload.size).to eq 1
+
+          payload = e.payload.first
+          expect(payload.status).to eq '404'
+          expect(payload.code).to eq 'missing_relationship'
+          expect(payload.title).to eq I18n.t('fun_with_json_api.exceptions.missing_relationship')
+          expect(payload.pointer).to eq '/data/relationships/example/id'
+          expect(payload.detail).to eq "Unable to find 'persons' with matching id: \"foobar\""
+        end
+      end
+
+      it 'raises a InvalidRelationship when given an array value' do
+        expect do
+          deserializer.parse_example_id %w(1 2)
+        end.to raise_error(FunWithJsonApi::Exceptions::InvalidRelationship) do |e|
+          expect(e.payload.size).to eq 1
+
+          payload = e.payload.first
+          expect(payload.status).to eq '400'
+          expect(payload.code).to eq 'invalid_relationship'
+          expect(payload.title).to eq I18n.t('fun_with_json_api.exceptions.invalid_relationship')
+          expect(payload.pointer).to eq '/data/relationships/example'
+          expect(payload.detail).to be_kind_of(String)
+        end
+      end
     end
   end
 end

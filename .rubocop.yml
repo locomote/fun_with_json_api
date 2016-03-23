@@ -10,4 +10,4 @@ Style/Documentation:
 
 Style/MultilineBlockChain:
   Exclude:
-    - 'spec/fun_with_json_api/pre_deserializer_spec.rb'
+    - 'spec/**/*_spec.rb'
