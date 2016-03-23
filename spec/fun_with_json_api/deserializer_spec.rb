@@ -8,10 +8,8 @@ require 'spec_helper'
 #   attribute #{attribute}, #{attribute_options}
 # end
 def deserializer_class_with_attribute(attribute, attribute_options = {})
-  Class.new(FunWithJsonApi::Deserializer).tap do |klass|
-    klass.class_eval do
-      attribute attribute, attribute_options
-    end
+  Class.new(FunWithJsonApi::Deserializer) do
+    attribute attribute, attribute_options
   end
 end
 

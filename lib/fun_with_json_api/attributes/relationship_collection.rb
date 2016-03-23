@@ -11,8 +11,12 @@ module FunWithJsonApi
                to: :deserializer
 
       def initialize(name, deserializer_class, options = {})
-        super(name, options)
+        super(name, options.reverse_merge(as: name.to_s.singularize.to_sym))
         @deserializer_class = deserializer_class
+
+        if as.to_s != as.to_s.singularize
+          raise ArgumentError, "Use a singular relationship as value: {as: :#{as.to_s.singularize}}"
+        end
       end
 
       def deserializer
@@ -40,7 +44,7 @@ module FunWithJsonApi
 
       # User the singular of `as` that is how AMS converts the value
       def param_value
-        :"#{as.to_s.singularize}_ids"
+        :"#{as}_ids"
       end
 
       private

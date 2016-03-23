@@ -127,13 +127,13 @@ describe FunWithJsonApi::PreDeserializer do
       it 'should pass through singular relationship values with a _ids suffix' do
         foo_deserializer_class = Class.new(FunWithJsonApi::Deserializer)
         deserializer = Class.new(FunWithJsonApi::Deserializer) do
-          has_many :foo, foo_deserializer_class
+          has_many :foos, foo_deserializer_class
         end.create
 
         document = {
           data: {
             relationships: {
-              foo: {
+              foos: {
                 data: [{ id: '42', type: 'foos' }, { id: '24', type: 'foos' }]
               }
             }
@@ -147,13 +147,13 @@ describe FunWithJsonApi::PreDeserializer do
       it 'should handle renamed relationships' do
         foo_deserializer_class = Class.new(FunWithJsonApi::Deserializer)
         deserializer = Class.new(FunWithJsonApi::Deserializer) do
-          has_many :foo, foo_deserializer_class, as: :blargh
+          has_many :foos, foo_deserializer_class, as: :blargh
         end.create
 
         document = {
           data: {
             relationships: {
-              foo: {
+              foos: {
                 data: [{ id: '42', type: 'foos' }, { id: '11', type: 'foos' }]
               }
             }
@@ -167,13 +167,13 @@ describe FunWithJsonApi::PreDeserializer do
       it 'should only return known relationships' do
         foo_deserializer_class = Class.new(FunWithJsonApi::Deserializer)
         deserializer = Class.new(FunWithJsonApi::Deserializer) do
-          has_many :foo, foo_deserializer_class
+          has_many :foos, foo_deserializer_class
         end.create
 
         document = {
           data: {
             relationships: {
-              foo: {
+              foos: {
                 data: [{ id: '42', type: 'foos' }]
               },
               blargh: {
