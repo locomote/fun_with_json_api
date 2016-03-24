@@ -13,7 +13,7 @@ class UserDeserializer < FunWithJsonApi::Deserializer
 end
 ```
 
-and a Article Deserializer:
+and an Article Deserializer:
 
 ```
 class ArticlesDeserializer
@@ -42,7 +42,7 @@ will convert:
 }
 ```
 
-Into parameters than can create/update a `Article`:
+Into parameters than can create/update an `Article`:
 
 ```
 {
