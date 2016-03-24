@@ -1,4 +1,5 @@
 # FunWithJsonApi
+[![Build Status](https://travis-ci.org/bmorrall/fun_with_json_api.svg?branch=master)](https://travis-ci.org/bmorrall/fun_with_json_api)
 
 ## Deserializer
 
