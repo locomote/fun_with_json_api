@@ -1,5 +1,6 @@
 # FunWithJsonApi
 [![Build Status](https://travis-ci.org/bmorrall/fun_with_json_api.svg?branch=master)](https://travis-ci.org/bmorrall/fun_with_json_api)
+[![Gem Version](https://badge.fury.io/rb/fun_with_json_api.svg)](https://badge.fury.io/rb/fun_with_json_api)
 
 ## Deserializer
 
