@@ -3,6 +3,54 @@
 
 ## Deserializer
 
+With a User Deserializer:
+
+```
+class UserDeserializer < FunWithJsonApi::Deserializer
+  type 'people'
+  resource_class User
+end
+```
+
+and a Article Deserializer:
+
+```
+class ArticlesDeserializer
+  resource_class Article
+
+  attribute :title
+
+  has_one :author, -> { UserDeserializer }
+end
+```
+
+Calling `FunWithJsonApi.deserialize(params, ArticlesDeserializer)` within a controller,
+will convert:
+
+```
+{
+  "type": "articles",
+  "attributes": {
+    "title": "Rails is Omakase"
+  },
+  "relationships": {
+    "author": {
+      "data": { "type": "people", "id": "9" }
+    }
+  }
+}
+```
+
+Into parameters than can create/update a `Article`:
+
+```
+{
+  title: "Rails is Omakase",
+  author_id: 9
+}
+```
+
+With a sprinking of json_api validation, and a lot of semantically correct json api error responses.
 
 ### Attribute Types
 
