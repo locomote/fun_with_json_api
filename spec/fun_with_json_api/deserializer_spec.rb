@@ -39,38 +39,38 @@ end
 describe FunWithJsonApi::Deserializer do
   describe '#parse_{attribute}' do
     context 'with an alias value' do
-      it 'should generated an attribute from the alias value' do
+      it 'defines a parse method from the alias value' do
         deserializer = deserializer_with_attribute(:original_key, as: :assigned_key)
         expect(deserializer.parse_assigned_key('Foo Bar')).to eq 'Foo Bar'
-        expect(deserializer).to_not respond_to(:original_key)
+        expect(deserializer).not_to respond_to(:original_key)
       end
     end
 
     context 'with no format argument (string)' do
-      it 'should allow a String value' do
+      it 'allows a String value' do
         deserializer = deserializer_with_attribute(:example)
         expect(deserializer.parse_example('Foo Bar')).to eq 'Foo Bar'
       end
-      it 'should allow a nil value' do
+      it 'allows a nil value' do
         deserializer = deserializer_with_attribute(:example)
         expect(deserializer.parse_example(nil)).to be nil
       end
     end
 
     context 'with a boolean format' do
-      it 'should allow a Boolean.TRUE value' do
+      it 'allows a Boolean.TRUE value' do
         deserializer = deserializer_with_attribute(:example, format: :boolean)
         expect(deserializer.parse_example(true)).to eq true
       end
-      it 'should allow a Boolean.FALSE value' do
+      it 'allows a Boolean.FALSE value' do
         deserializer = deserializer_with_attribute(:example, format: :boolean)
         expect(deserializer.parse_example(false)).to eq false
       end
-      it 'should allow a nil value' do
+      it 'allows a nil value' do
         deserializer = deserializer_with_attribute(:example, format: :boolean)
         expect(deserializer.parse_example(nil)).to be nil
       end
-      it 'should raise an InvalidAttribute for invalid boolean values' do
+      it 'raises an InvalidAttribute error an for invalid boolean values' do
         deserializer = deserializer_with_attribute(:example, format: :boolean)
         ['true', 'True', 'TRUE', 1, 'false', 'False', 'FALSE', 0].each do |value|
           expect do
@@ -94,15 +94,15 @@ describe FunWithJsonApi::Deserializer do
     end
 
     context 'with a date format' do
-      it 'should allow a "YYYY-MM-DD" formatted value' do
+      it 'allows a "YYYY-MM-DD" formatted date String' do
         deserializer = deserializer_with_attribute(:example, format: :date)
         expect(deserializer.parse_example('2016-03-12')).to eq Date.new(2016, 03, 12)
       end
-      it 'should allow a nil value' do
+      it 'allows a nil value' do
         deserializer = deserializer_with_attribute(:example, format: :date)
         expect(deserializer.parse_example(nil)).to be nil
       end
-      it 'should raise an InvalidAttribute for invalid date value' do
+      it 'raises an InvalidAttribute error an for invalid date value' do
         deserializer = deserializer_with_attribute(:example, format: :date)
         ['2016-12', 'Last Wednesday', 'April'].each do |value|
           expect do
@@ -126,7 +126,7 @@ describe FunWithJsonApi::Deserializer do
     end
 
     context 'with a datetime format' do
-      it 'should allow a ISO 8601 formatted values' do
+      it 'allows a ISO 8601 formatted values' do
         deserializer = deserializer_with_attribute(:example, format: :datetime)
         [
           '2016-03-11T03:45:40+00:00',
@@ -139,11 +139,11 @@ describe FunWithJsonApi::Deserializer do
           )
         end
       end
-      it 'should allow a nil value' do
+      it 'allows a nil value' do
         deserializer = deserializer_with_attribute(:example, format: :datetime)
         expect(deserializer.parse_example(nil)).to be nil
       end
-      it 'should raise an InvalidAttribute for invalid date value' do
+      it 'raises an InvalidAttribute error an for invalid date value' do
         deserializer = deserializer_with_attribute(:example, format: :datetime)
         [
           'Last Wednesday',
@@ -170,27 +170,27 @@ describe FunWithJsonApi::Deserializer do
     end
 
     context 'with a decimal format' do
-      it 'should allow integers' do
+      it 'allows integers' do
         deserializer = deserializer_with_attribute(:example, format: :decimal)
         expect(deserializer.parse_example(12)).to eq BigDecimal.new('12')
       end
-      it 'should allow floats' do
+      it 'allows floats' do
         deserializer = deserializer_with_attribute(:example, format: :decimal)
         expect(deserializer.parse_example(12.34)).to eq BigDecimal.new('12.34')
       end
-      it 'should allow integer numbers as strings' do
+      it 'allows integer numbers as strings' do
         deserializer = deserializer_with_attribute(:example, format: :decimal)
         expect(deserializer.parse_example('12')).to eq BigDecimal.new('12')
       end
-      it 'should allow floating point numbers as strings' do
+      it 'allows floating point numbers as strings' do
         deserializer = deserializer_with_attribute(:example, format: :decimal)
         expect(deserializer.parse_example('12.30')).to eq BigDecimal.new('12.30')
       end
-      it 'should allow a nil value' do
+      it 'allows a nil value' do
         deserializer = deserializer_with_attribute(:example, format: :decimal)
         expect(deserializer.parse_example(nil)).to be nil
       end
-      it 'should raise an InvalidAttribute for invalid decimal value' do
+      it 'raises an InvalidAttribute error an for invalid decimal value' do
         deserializer = deserializer_with_attribute(:example, format: :decimal)
         [
           'twelve',
@@ -218,23 +218,23 @@ describe FunWithJsonApi::Deserializer do
     end
 
     context 'with a float format' do
-      it 'should allow floats' do
+      it 'allows floats' do
         deserializer = deserializer_with_attribute(:example, format: :float)
         expect(deserializer.parse_example(12.34)).to eq 12.34
       end
-      it 'should allow float numbers as strings' do
+      it 'allows float numbers as strings' do
         deserializer = deserializer_with_attribute(:example, format: :float)
         expect(deserializer.parse_example('12.34')).to eq 12.34
       end
-      it 'should allow integer numbers as strings' do
+      it 'allows integer numbers as strings' do
         deserializer = deserializer_with_attribute(:example, format: :float)
         expect(deserializer.parse_example('12')).to eq 12.0
       end
-      it 'should allow a nil value' do
+      it 'allows a nil value' do
         deserializer = deserializer_with_attribute(:example, format: :float)
         expect(deserializer.parse_example(nil)).to be nil
       end
-      it 'should raise an InvalidAttribute for invalid float value' do
+      it 'raises an InvalidAttribute error an for invalid float value' do
         deserializer = deserializer_with_attribute(:example, format: :float)
         [
           'twelve',
@@ -262,15 +262,15 @@ describe FunWithJsonApi::Deserializer do
     end
 
     context 'with a integer format' do
-      it 'should allow integer numbers as strings' do
+      it 'allows integer numbers as strings' do
         deserializer = deserializer_with_attribute(:example, format: :integer)
         expect(deserializer.parse_example('12')).to eq BigDecimal.new('12')
       end
-      it 'should allow a nil value' do
+      it 'allows a nil value' do
         deserializer = deserializer_with_attribute(:example, format: :integer)
         expect(deserializer.parse_example(nil)).to be nil
       end
-      it 'should raise an InvalidAttribute for invalid integer value' do
+      it 'raises an InvalidAttribute error an for invalid integer value' do
         deserializer = deserializer_with_attribute(:example, format: :integer)
         [
           12.0,
@@ -315,14 +315,14 @@ describe FunWithJsonApi::Deserializer do
   describe '#parse_{relationship}_id' do
     context 'with a ARModels::Author relationship with a "code" id param' do
       let(:deserializer) do
-        author_deserializer_class = Class.new(FunWithJsonApi::Deserializer) do
+        author_deserializer_class = Class.new(described_class) do
           id_param 'code'
           type 'persons'
           resource_class ARModels::Author
         end
 
         # Build the Deserializer
-        Class.new(FunWithJsonApi::Deserializer) do
+        Class.new(described_class) do
           belongs_to :example, author_deserializer_class
         end.create
       end
@@ -368,14 +368,14 @@ describe FunWithJsonApi::Deserializer do
   describe '#parse_{relationship}_ids' do
     context 'with a ARModels::Author relationship with a "code" id param' do
       let(:deserializer) do
-        author_deserializer_class = Class.new(FunWithJsonApi::Deserializer) do
+        author_deserializer_class = Class.new(described_class) do
           id_param 'code'
           type 'persons'
           resource_class ARModels::Author
         end
 
         # Build the Deserializer
-        Class.new(FunWithJsonApi::Deserializer) do
+        Class.new(described_class) do
           has_many :examples, author_deserializer_class
         end.create
       end

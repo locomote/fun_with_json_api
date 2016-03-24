@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe FunWithJsonApi::DeserializerClassMethods do
   describe '.belongs_to' do
-    it 'should add a Relationship attribute' do
+    it 'adds a Relationship attribute' do
       foos_deserializer_class = Class.new(FunWithJsonApi::Deserializer) do
         attribute :blargh
       end
@@ -22,7 +22,7 @@ describe FunWithJsonApi::DeserializerClassMethods do
   end
 
   describe '.has_many' do
-    it 'should add a RelationshipCollection attribute' do
+    it 'adds a RelationshipCollection attribute' do
       foos_deserializer_class = Class.new(FunWithJsonApi::Deserializer) do
         attribute :blargh
       end
@@ -40,7 +40,7 @@ describe FunWithJsonApi::DeserializerClassMethods do
       expect(relationship.deserializer.relationships).to eq []
     end
 
-    it 'should not allow pluralized as values' do
+    it 'does not allow pluralized "as" values' do
       foos_deserializer_class = Class.new(FunWithJsonApi::Deserializer)
       expect do
         Class.new(FunWithJsonApi::Deserializer) do

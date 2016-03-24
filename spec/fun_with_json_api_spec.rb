@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe FunWithJsonApi do
-  it 'should have a Semantic Versioning compatible VERSION' do
+  it 'has a semantic-versioning compatible VERSION' do
     # based on https://github.com/npm/node-semver/issues/32
     version_regex = /
       \A([0-9]+) # major
@@ -15,7 +15,7 @@ describe FunWithJsonApi do
 
   describe '.deserialize' do
     context 'with an PostDeserializer' do
-      it 'should convert a json api to post params' do
+      it 'converts a json api document into post params' do
         ARModels::Author.create(id: 9)
         ARModels::Comment.create(id: 5)
         ARModels::Comment.create(id: 12)
@@ -42,7 +42,7 @@ describe FunWithJsonApi do
           }
         }
 
-        post_params = FunWithJsonApi.deserialize(post_json, ARModels::PostDeserializer)
+        post_params = described_class.deserialize(post_json, ARModels::PostDeserializer)
         expect(post_params).to eq(
           title: 'Rails is Omakase',
           body: 'This is my post body',

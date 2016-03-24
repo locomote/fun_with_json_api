@@ -3,7 +3,7 @@ require 'spec_helper'
 describe FunWithJsonApi::PreDeserializer do
   describe '.parse' do
     describe 'document attributes parsing' do
-      it 'should pass through attribute values' do
+      it 'cpmverts known attribute values into a hash' do
         deserializer = Class.new(FunWithJsonApi::Deserializer) do
           attribute :foo
         end.create
@@ -16,11 +16,11 @@ describe FunWithJsonApi::PreDeserializer do
           }
         }.deep_stringify_keys!
 
-        expect(FunWithJsonApi::PreDeserializer.parse(document, deserializer)).to eq(
+        expect(described_class.parse(document, deserializer)).to eq(
           foo: 'bar'
         )
       end
-      it 'should handle renamed attributes' do
+      it 'handles renamed attributes' do
         deserializer = Class.new(FunWithJsonApi::Deserializer) do
           attribute :foo, as: :blargh
         end.create
@@ -33,11 +33,11 @@ describe FunWithJsonApi::PreDeserializer do
           }
         }.deep_stringify_keys!
 
-        expect(FunWithJsonApi::PreDeserializer.parse(document, deserializer)).to eq(
+        expect(described_class.parse(document, deserializer)).to eq(
           blargh: 'bar'
         )
       end
-      it 'should only return known attributes' do
+      it 'only returns known attributes' do
         deserializer = Class.new(FunWithJsonApi::Deserializer) do
           attribute :foo
         end.create
@@ -51,14 +51,14 @@ describe FunWithJsonApi::PreDeserializer do
           }
         }.deep_stringify_keys!
 
-        expect(FunWithJsonApi::PreDeserializer.parse(document, deserializer)).to eq(
+        expect(described_class.parse(document, deserializer)).to eq(
           foo: 'bar'
         )
       end
     end
 
     describe 'single relationship parsing' do
-      it 'should pass through relationship values with a _id suffix' do
+      it 'outputs single relationship values with a _id suffix' do
         foo_deserializer_class = Class.new(FunWithJsonApi::Deserializer)
         deserializer = Class.new(FunWithJsonApi::Deserializer) do
           belongs_to :foo, foo_deserializer_class
@@ -74,11 +74,11 @@ describe FunWithJsonApi::PreDeserializer do
           }
         }.deep_stringify_keys!
 
-        expect(FunWithJsonApi::PreDeserializer.parse(document, deserializer)).to eq(
+        expect(described_class.parse(document, deserializer)).to eq(
           foo_id: '42'
         )
       end
-      it 'should handle renamed relationships' do
+      it 'handles renamed relationships' do
         foo_deserializer_class = Class.new(FunWithJsonApi::Deserializer)
         deserializer = Class.new(FunWithJsonApi::Deserializer) do
           belongs_to :foo, foo_deserializer_class, as: :blargh
@@ -94,11 +94,11 @@ describe FunWithJsonApi::PreDeserializer do
           }
         }.deep_stringify_keys!
 
-        expect(FunWithJsonApi::PreDeserializer.parse(document, deserializer)).to eq(
+        expect(described_class.parse(document, deserializer)).to eq(
           blargh_id: '42'
         )
       end
-      it 'should only return known relationships' do
+      it 'only returns known relationships' do
         foo_deserializer_class = Class.new(FunWithJsonApi::Deserializer)
         deserializer = Class.new(FunWithJsonApi::Deserializer) do
           belongs_to :foo, foo_deserializer_class
@@ -117,14 +117,14 @@ describe FunWithJsonApi::PreDeserializer do
           }
         }.deep_stringify_keys!
 
-        expect(FunWithJsonApi::PreDeserializer.parse(document, deserializer)).to eq(
+        expect(described_class.parse(document, deserializer)).to eq(
           foo_id: '42'
         )
       end
     end
 
     describe 'relationship collection parsing' do
-      it 'should pass through singular relationship values with a _ids suffix' do
+      it 'outputs singular relationship values with a _ids suffix' do
         foo_deserializer_class = Class.new(FunWithJsonApi::Deserializer)
         deserializer = Class.new(FunWithJsonApi::Deserializer) do
           has_many :foos, foo_deserializer_class
@@ -140,11 +140,11 @@ describe FunWithJsonApi::PreDeserializer do
           }
         }.deep_stringify_keys!
 
-        expect(FunWithJsonApi::PreDeserializer.parse(document, deserializer)).to eq(
+        expect(described_class.parse(document, deserializer)).to eq(
           foo_ids: %w(42 24)
         )
       end
-      it 'should handle renamed relationships' do
+      it 'handles renamed relationships' do
         foo_deserializer_class = Class.new(FunWithJsonApi::Deserializer)
         deserializer = Class.new(FunWithJsonApi::Deserializer) do
           has_many :foos, foo_deserializer_class, as: :blargh
@@ -160,11 +160,11 @@ describe FunWithJsonApi::PreDeserializer do
           }
         }.deep_stringify_keys!
 
-        expect(FunWithJsonApi::PreDeserializer.parse(document, deserializer)).to eq(
+        expect(described_class.parse(document, deserializer)).to eq(
           blargh_ids: %w(42 11)
         )
       end
-      it 'should only return known relationships' do
+      it 'only returns known relationship collections' do
         foo_deserializer_class = Class.new(FunWithJsonApi::Deserializer)
         deserializer = Class.new(FunWithJsonApi::Deserializer) do
           has_many :foos, foo_deserializer_class
@@ -183,14 +183,14 @@ describe FunWithJsonApi::PreDeserializer do
           }
         }.deep_stringify_keys!
 
-        expect(FunWithJsonApi::PreDeserializer.parse(document, deserializer)).to eq(
+        expect(described_class.parse(document, deserializer)).to eq(
           foo_ids: ['42']
         )
       end
     end
 
     describe 'parser exceptions' do
-      it 'should handle an invalid /data values' do
+      it 'handles an invalid /data value' do
         deserializer = Class.new(FunWithJsonApi::Deserializer).create
         [
           nil,
@@ -200,7 +200,7 @@ describe FunWithJsonApi::PreDeserializer do
           }
         ].each do |document|
           expect do
-            FunWithJsonApi::PreDeserializer.parse(document, deserializer)
+            described_class.parse(document, deserializer)
           end.to raise_error(FunWithJsonApi::Exceptions::InvalidDocument) do |e|
             expect(e.payload.size).to eq 1
 
@@ -213,7 +213,7 @@ describe FunWithJsonApi::PreDeserializer do
           end
         end
       end
-      it 'should handle invalid /data/attributes values' do
+      it 'handles an invalid /data/attributes value' do
         deserializer = Class.new(FunWithJsonApi::Deserializer).create
         [
           {
@@ -221,7 +221,7 @@ describe FunWithJsonApi::PreDeserializer do
           }
         ].each do |document|
           expect do
-            FunWithJsonApi::PreDeserializer.parse(document, deserializer)
+            described_class.parse(document, deserializer)
           end.to raise_error(FunWithJsonApi::Exceptions::InvalidDocument) do |e|
             expect(e.payload.size).to eq 1
 
@@ -234,7 +234,7 @@ describe FunWithJsonApi::PreDeserializer do
           end
         end
       end
-      it 'should handle invalid /data/relationships values' do
+      it 'handles an invalid /data/relationships value' do
         deserializer = Class.new(FunWithJsonApi::Deserializer).create
         [
           {
@@ -242,7 +242,7 @@ describe FunWithJsonApi::PreDeserializer do
           }
         ].each do |document|
           expect do
-            FunWithJsonApi::PreDeserializer.parse(document, deserializer)
+            described_class.parse(document, deserializer)
           end.to raise_error(FunWithJsonApi::Exceptions::InvalidDocument) do |e|
             expect(e.payload.size).to eq 1
 
@@ -255,7 +255,7 @@ describe FunWithJsonApi::PreDeserializer do
           end
         end
       end
-      it 'should handle a invalid relationship value' do
+      it 'handles an invalid relationship value' do
         deserializer = Class.new(FunWithJsonApi::Deserializer).create
         [
           {
@@ -269,7 +269,7 @@ describe FunWithJsonApi::PreDeserializer do
           }
         ].each do |document|
           expect do
-            FunWithJsonApi::PreDeserializer.parse(document, deserializer)
+            described_class.parse(document, deserializer)
           end.to raise_error(FunWithJsonApi::Exceptions::InvalidDocument) do |e|
             expect(e.payload.size).to eq 1
 

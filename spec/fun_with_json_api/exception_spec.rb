@@ -8,7 +8,7 @@ describe FunWithJsonApi::Exception do
   describe '#message' do
     subject { instance.message }
 
-    it 'should return the developer-only message' do
+    it 'returns the developer-only exception message' do
       expect(subject).to eq message
     end
   end
@@ -16,14 +16,14 @@ describe FunWithJsonApi::Exception do
   describe '#payload' do
     subject { instance.payload }
 
-    it 'should wrap the payload in a array' do
+    it 'wraps the payload in a array' do
       expect(subject).to eq [payload]
     end
 
-    context 'with an array of payloads' do
+    context 'with an array of exceptions payloads' do
       let(:payload) { Array.new(3) { FunWithJsonApi::ExceptionPayload.new } }
 
-      it 'should return the payload array' do
+      it 'returns all exception payloads' do
         expect(subject).to eq payload
       end
     end
@@ -32,14 +32,14 @@ describe FunWithJsonApi::Exception do
   describe '#http_status' do
     subject { instance.http_status }
 
-    it 'should default to 400' do
+    it 'defaults to returning 400' do
       expect(subject).to eq 400
     end
 
     context 'with a payload with a status value' do
       let(:payload) { FunWithJsonApi::ExceptionPayload.new.tap { |p| p.status = '422' } }
 
-      it 'should return the payload status' do
+      it 'returns the payload status value' do
         expect(subject).to eq 422
       end
     end
@@ -49,7 +49,7 @@ describe FunWithJsonApi::Exception do
         Array.new(3) { FunWithJsonApi::ExceptionPayload.new.tap { |p| p.status = '403' } }
       end
 
-      it 'should return the common payload status value' do
+      it 'returns the common payload status value' do
         expect(subject).to eq 403
       end
     end
@@ -59,7 +59,7 @@ describe FunWithJsonApi::Exception do
         Array.new(3) { |i| FunWithJsonApi::ExceptionPayload.new.tap { |p| p.status = "40#{i}" } }
       end
 
-      it 'should fall back to 400' do
+      it 'falls back to returning 400' do
         expect(subject).to eq 400
       end
     end
@@ -69,7 +69,7 @@ describe FunWithJsonApi::Exception do
         Array.new(3) { |i| FunWithJsonApi::ExceptionPayload.new.tap { |p| p.status = "50#{i}" } }
       end
 
-      it 'should fall back to 500' do
+      it 'falls back to returning 500' do
         expect(subject).to eq 500
       end
     end

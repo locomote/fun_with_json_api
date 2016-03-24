@@ -4,7 +4,9 @@ describe FunWithJsonApi::ControllerMethods, type: :controller do
   describe '#render_fun_with_json_api_exception' do
     context 'with a controller that raises an exception' do
       controller do
+        # rubocop:disable RSpec/DescribedClass
         include FunWithJsonApi::ControllerMethods
+        # rubocop:enable RSpec/DescribedClass
 
         rescue_from FunWithJsonApi::Exception, with: :render_fun_with_json_api_exception
 

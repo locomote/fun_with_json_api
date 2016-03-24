@@ -17,7 +17,10 @@ end
 Bundler::GemHelper.install_tasks
 
 require 'rubocop/rake_task'
-RuboCop::RakeTask.new
+require 'rubocop-rspec'
+RuboCop::RakeTask.new do |task|
+  task.requires << 'rubocop-rspec'
+end
 
 require 'rspec/core'
 require 'rspec/core/rake_task'
