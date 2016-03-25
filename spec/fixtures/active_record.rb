@@ -54,6 +54,12 @@ module ARModels
     belongs_to :author, -> { AuthorDeserializer }
   end
 
+  class AuthorSerializer < ActiveModel::Serializer
+    type 'person'
+    attribute :name
+    has_many :posts
+  end
+
   class AuthorDeserializer < FunWithJsonApi::Deserializer
     type 'person'
     resource_class Author

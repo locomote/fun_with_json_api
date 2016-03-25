@@ -7,6 +7,8 @@ require 'fun_with_json_api/deserializer_config_builder'
 
 # Makes working with JSON:API fun!
 module FunWithJsonApi
+  MEDIA_TYPE = 'application/vnd.api+json'.freeze
+
   module_function
 
   def deserialize(api_document, deserializer_class, options = {})
