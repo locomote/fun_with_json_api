@@ -16,8 +16,8 @@ module FunWithJsonApi
     def initialize(name, options = {})
       raise ArgumentError, 'name cannot be blank!' unless name.present?
 
-      @name = name
-      @as = options.fetch(:as, name)
+      @name = name.to_sym
+      @as = options.fetch(:as, name).to_sym
     end
 
     def call(value)
@@ -29,7 +29,7 @@ module FunWithJsonApi
     end
 
     def param_value
-      as.to_sym
+      as
     end
   end
 end

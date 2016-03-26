@@ -15,7 +15,42 @@ describe FunWithJsonApi do
 
   describe '.deserialize' do
     context 'with an PostDeserializer' do
-      it 'converts a json api document into post params' do
+      it 'converts a json api document into create post params' do
+        ARModels::Author.create(id: 9)
+        ARModels::Comment.create(id: 5)
+        ARModels::Comment.create(id: 12)
+
+        post_json = {
+          'data': {
+            'type': 'posts',
+            'attributes': {
+              'title': 'Rails is Omakase',
+              'body': 'This is my post body'
+            },
+            'relationships': {
+              'author': {
+                'data': { 'type': 'people', 'id': '9' }
+              },
+              'comments': {
+                'data': [
+                  { 'type': 'comments', 'id': '5' },
+                  { 'type': 'comments', 'id': '12' }
+                ]
+              }
+            }
+          }
+        }
+
+        post_params = described_class.deserialize(post_json, ARModels::PostDeserializer)
+        expect(post_params).to eq(
+          title: 'Rails is Omakase',
+          body: 'This is my post body',
+          author_id: 9,
+          comment_ids: [5, 12]
+        )
+      end
+      it 'converts a json api document into update post params' do
+        post = ARModels::Post.create(id: 1)
         ARModels::Author.create(id: 9)
         ARModels::Comment.create(id: 5)
         ARModels::Comment.create(id: 12)
@@ -42,7 +77,7 @@ describe FunWithJsonApi do
           }
         }
 
-        post_params = described_class.deserialize(post_json, ARModels::PostDeserializer)
+        post_params = described_class.deserialize(post_json, ARModels::PostDeserializer, post)
         expect(post_params).to eq(
           title: 'Rails is Omakase',
           body: 'This is my post body',

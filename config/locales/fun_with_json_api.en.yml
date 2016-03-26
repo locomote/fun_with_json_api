@@ -2,6 +2,10 @@ en:
   fun_with_json_api:
     exceptions:
       invalid_document: 'Request json_api document is invalid'
+      invalid_document_identifier: 'Request json_api document id does not expected resource'
+      invalid_client_generated_identifier: 'Request json_api document id attribute has already been used for an existing resource'
+      illegal_client_generated_identifier: 'Request json_api attempted to assign unsupported client-generated id'
+      invalid_document_type: 'Request json_api document type does not match endpoint'
       invalid_attribute: 'Request json_api document attribute is invalid'
       invalid_relationship: 'Request json_api document relationship is invalid'
       missing_relationship: 'Unable to find the requested relationship'
@@ -11,3 +15,8 @@ en:
       invalid_decimal_attribute: "Decimal value must be a decimal number (i.e. 123.45)"
       invalid_float_attribute: "Float value must be a floating point number (i.e. 123.45)"
       invalid_integer_attribute: "Integer value must be a integer number (i.e. 123)"
+    schema_validators:
+      document_id_does_not_match_resource: "Expected document id to match resource at endpoint: %{expected}"
+      document_type_does_not_match_endpoint: "Expected document type to be a '%{expected}' resource"
+      resource_id_can_not_be_client_generated: "The current endpoint does not allow you to set an id for a new '%{resource}' resource"
+      resource_id_has_already_been_assigned: "The provided id for a new '%{resource}' resource has already been used by another resource: %{id}"
