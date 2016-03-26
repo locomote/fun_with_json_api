@@ -29,7 +29,7 @@ module FunWithJsonApi
           raise build_invalid_relationship_collection_error(values)
         end
 
-        collection = resource_class.where(id_param => values)
+        collection = deserializer.load_collection_from_id_param(values)
 
         # Ensure the collection size matches
         expected_size = values.size

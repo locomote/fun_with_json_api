@@ -29,6 +29,16 @@ module FunWithJsonApi
       @relationships = filter_attributes_by_name(options[:relationships], self.class.relationships)
     end
 
+    # Loads a collection of of `resource_class` instances with `id_param` matching `id_values`
+    def load_collection_from_id_param(id_values)
+      resource_class.where(id_param => id_values)
+    end
+
+    # Loads a single instance of `resource_class` with a `id_param` matching `id_value`
+    def load_resource_from_id_param(id_value)
+      resource_class.find_by!(id_param => id_value)
+    end
+
     # Takes a parsed params hash from ActiveModelSerializers::Deserialization and sanitizes values
     def sanitize_params(params)
       Hash[

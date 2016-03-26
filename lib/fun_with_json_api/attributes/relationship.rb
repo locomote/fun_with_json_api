@@ -29,9 +29,12 @@ module FunWithJsonApi
           raise build_invalid_relationship_error(id_value)
         end
 
-        resource_class.find_by!(id_param => id_value).try(:id) if id_value
-      rescue ActiveRecord::RecordNotFound => e
-        raise convert_record_not_found_error(e, id_value)
+        resource = deserializer.load_resource_from_id_param(id_value)
+        return resource.id if resource
+
+        raise build_missing_relationship_error(id_value)
+      rescue ActiveRecord::RecordNotFound => exception
+        raise convert_record_not_found_error(exception, id_value)
       end
 
       def param_value
@@ -60,13 +63,21 @@ module FunWithJsonApi
         Exceptions::InvalidRelationship.new(exception_message + ": #{id_value.inspect}", payload)
       end
 
-      def convert_record_not_found_error(exception, id_value)
+      def build_missing_relationship_error(id_value, message = nil)
+        message ||= missing_resource_debug_message(id_value)
         payload = ExceptionPayload.new
         payload.pointer = "/data/relationships/#{name}/id"
         payload.detail = "Unable to find '#{type}' with matching id: #{id_value.inspect}"
-        exception_message = "Couldn't find #{resource_class} where "\
-                            "#{id_param} = #{id_value.inspect}: #{exception.message}"
-        Exceptions::MissingRelationship.new(exception_message, payload)
+        Exceptions::MissingRelationship.new(message, payload)
+      end
+
+      def convert_record_not_found_error(exception, id_value)
+        exception_message = "#{missing_resource_debug_message(id_value)}: #{exception.message}"
+        build_missing_relationship_error(id_value, exception_message)
+      end
+
+      def missing_resource_debug_message(id_value)
+        "Couldn't find #{resource_class.name} where #{id_param} = #{id_value.inspect}"
       end
     end
   end
