@@ -36,7 +36,7 @@ module FunWithJsonApi
 
     # Loads a single instance of `resource_class` with a `id_param` matching `id_value`
     def load_resource_from_id_param(id_value)
-      resource_class.find_by!(id_param => id_value)
+      resource_class.find_by(id_param => id_value)
     end
 
     # Takes a parsed params hash from ActiveModelSerializers::Deserialization and sanitizes values

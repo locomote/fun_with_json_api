@@ -33,8 +33,6 @@ module FunWithJsonApi
         return resource.id if resource
 
         raise build_missing_relationship_error(id_value)
-      rescue ActiveRecord::RecordNotFound => exception
-        raise convert_record_not_found_error(exception, id_value)
       end
 
       def param_value
@@ -69,11 +67,6 @@ module FunWithJsonApi
         payload.pointer = "/data/relationships/#{name}/id"
         payload.detail = "Unable to find '#{type}' with matching id: #{id_value.inspect}"
         Exceptions::MissingRelationship.new(message, payload)
-      end
-
-      def convert_record_not_found_error(exception, id_value)
-        exception_message = "#{missing_resource_debug_message(id_value)}: #{exception.message}"
-        build_missing_relationship_error(id_value, exception_message)
       end
 
       def missing_resource_debug_message(id_value)

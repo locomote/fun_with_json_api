@@ -336,7 +336,7 @@ describe FunWithJsonApi::Deserializer do
         expect do
           deserializer.parse_example_id 'foobar'
         end.to raise_error(FunWithJsonApi::Exceptions::MissingRelationship) do |e|
-          expect(e.message).to start_with "Couldn't find ARModels::Author where code = \"foobar\": "
+          expect(e.message).to eq "Couldn't find ARModels::Author where code = \"foobar\""
           expect(e.payload.size).to eq 1
 
           payload = e.payload.first
