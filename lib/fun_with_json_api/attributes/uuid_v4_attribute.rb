@@ -4,7 +4,7 @@ module FunWithJsonApi
     # as described in RFC 4122
     class UuidV4Attribute < Attribute
       # http://blog.arkency.com/2014/10/how-to-start-using-uuid-in-activerecord-with-postgresql/
-      UUID_V4_REGEX = /[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}/
+      UUID_V4_REGEX = /\A[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}\z/
 
       def call(value)
         return value if value.nil? || value =~ UUID_V4_REGEX
