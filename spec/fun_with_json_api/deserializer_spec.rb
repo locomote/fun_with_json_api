@@ -55,6 +55,27 @@ describe FunWithJsonApi::Deserializer do
         deserializer = deserializer_with_attribute(:example)
         expect(deserializer.parse_example(nil)).to be nil
       end
+      it 'raises an InvalidAttribute error an for non string value' do
+        deserializer = deserializer_with_attribute(:example)
+        [1, true, false, [], {}].each do |value|
+          expect do
+            deserializer.parse_example(value)
+          end.to raise_error(FunWithJsonApi::Exceptions::InvalidAttribute) do |e|
+            expect(e.payload.size).to eq 1
+
+            payload = e.payload.first
+            expect(payload.status).to eq '400'
+            expect(payload.code).to eq 'invalid_attribute'
+            expect(payload.title).to eq(
+              I18n.t('fun_with_json_api.exceptions.invalid_attribute')
+            )
+            expect(payload.detail).to eq(
+              I18n.t('fun_with_json_api.exceptions.invalid_string_attribute')
+            )
+            expect(payload.pointer).to eq '/data/attributes/example'
+          end
+        end
+      end
     end
 
     context 'with a boolean format' do

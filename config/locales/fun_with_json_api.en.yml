@@ -15,6 +15,7 @@ en:
       invalid_decimal_attribute: "Decimal value must be a decimal number (i.e. 123.45)"
       invalid_float_attribute: "Float value must be a floating point number (i.e. 123.45)"
       invalid_integer_attribute: "Integer value must be a integer number (i.e. 123)"
+      invalid_string_attribute: 'String value must be a JSON String (i.e. "Example")'
     schema_validators:
       document_id_does_not_match_resource: "Expected document id to match resource at endpoint: %{expected}"
       document_type_does_not_match_endpoint: "Expected document type to be a '%{expected}' resource"
