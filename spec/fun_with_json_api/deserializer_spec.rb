@@ -37,6 +37,57 @@ def deserializer_with_attribute(attribute, attribute_options = {})
 end
 
 describe FunWithJsonApi::Deserializer do
+  describe '.id_param' do
+    context 'with no arguments' do
+      it 'sets id_param to id for all new deserializer instances' do
+        instance = Class.new(described_class).create
+        expect(instance.id_param).to eq :id
+      end
+    end
+    context 'with a name argument' do
+      it 'adds an aliased id attribute for all new deserializer instances' do
+        instance = Class.new(described_class) do
+          id_param :code
+        end.create
+        expect(instance.id_param).to eq :code
+      end
+      it 'converts the name parameter to a symbol' do
+        instance = Class.new(described_class) do
+          id_param 'code'
+        end.create
+        expect(instance.id_param).to eq :code
+      end
+    end
+    context 'with a format argument' do
+      it 'adds an id attribute with format to all new deserializer instances' do
+        instance = Class.new(described_class) do
+          id_param format: :string
+        end.create
+        expect(instance.id_param).to eq :id
+        expect(instance.attributes.size).to eq 1
+
+        attribute = instance.attributes.first
+        expect(attribute).to be_kind_of(FunWithJsonApi::Attributes::StringAttribute)
+        expect(attribute.name).to eq :id
+        expect(attribute.as).to eq :id
+      end
+    end
+    context 'with a name and format argument' do
+      it 'adds an aliased id attribute with format to all new deserializer instances' do
+        instance = Class.new(described_class) do
+          id_param :code, format: :integer
+        end.create
+        expect(instance.id_param).to eq :code
+        expect(instance.attributes.size).to eq 1
+
+        attribute = instance.attributes.first
+        expect(attribute).to be_kind_of(FunWithJsonApi::Attributes::IntegerAttribute)
+        expect(attribute.name).to eq :id
+        expect(attribute.as).to eq :code
+      end
+    end
+  end
+
   describe '#parse_{attribute}' do
     context 'with an alias value' do
       it 'defines a parse method from the alias value' do

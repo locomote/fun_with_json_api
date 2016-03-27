@@ -3,9 +3,13 @@ require 'fun_with_json_api/attribute'
 module FunWithJsonApi
   # Provides a basic DSL for defining a FunWithJsonApi::Deserializer
   module DeserializerClassMethods
-    def id_param(id_param = nil)
-      @id_param = id_param if id_param
-      @id_param || :id
+    def id_param(id_param = nil, format: false)
+      @id_param = id_param.to_sym if id_param
+      (@id_param || :id).tap do |param|
+        if format
+          attribute(:id, as: param, format: format) # Create a new id attribute
+        end
+      end
     end
 
     def type(type = nil)
