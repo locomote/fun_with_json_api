@@ -30,12 +30,12 @@ module FunWithJsonApi
     end
 
     # Loads a collection of of `resource_class` instances with `id_param` matching `id_values`
-    def load_collection_from_id_param(id_values)
+    def load_collection_from_id_values(id_values)
       resource_class.where(id_param => id_values)
     end
 
     # Loads a single instance of `resource_class` with a `id_param` matching `id_value`
-    def load_resource_from_id_param(id_value)
+    def load_resource_from_id_value(id_value)
       resource_class.find_by(id_param => id_value)
     end
 

@@ -53,9 +53,9 @@ module FunWithJsonApi
       end
 
       def check_resource_id_has_not_already_been_used
-        if (existing = deserializer.load_resource_from_id_param(document_id))
+        if (existing = deserializer.load_resource_from_id_value(document_id))
           deserializer_class = deserializer.class.name || 'Deserializer'
-          message = "#{deserializer_class}#load_resource_from_id_param for '#{resource_type}' has"\
+          message = "#{deserializer_class}#load_resource_from_id_value for '#{resource_type}' has"\
                     ' found a existing resource matching document id'\
                     ": #{existing.class.name}##{existing.id}"
           payload = ExceptionPayload.new(

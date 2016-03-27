@@ -29,7 +29,7 @@ module FunWithJsonApi
           raise build_invalid_relationship_error(id_value)
         end
 
-        resource = deserializer.load_resource_from_id_param(id_value)
+        resource = deserializer.load_resource_from_id_value(id_value)
         return resource.id if resource
 
         raise build_missing_relationship_error(id_value)

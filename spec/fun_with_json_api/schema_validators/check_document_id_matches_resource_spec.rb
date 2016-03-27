@@ -80,7 +80,7 @@ describe FunWithJsonApi::SchemaValidators::CheckDocumentIdMatchesResource do
 
           context 'when a resource matching id exists' do
             before do
-              allow(deserializer).to receive(:load_resource_from_id_param)
+              allow(deserializer).to receive(:load_resource_from_id_value)
                 .with('42')
                 .and_return(double('existing_resource', id: '24'))
             end
