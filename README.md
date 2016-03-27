@@ -1,4 +1,7 @@
 # FunWithJsonApi
+
+Provides a DSL for converting json_api into active model parameters, with a sprinking of json_api validation, and a lot of semantically correct json api error responses.
+
 [![Build Status](https://travis-ci.org/bmorrall/fun_with_json_api.svg?branch=master)](https://travis-ci.org/bmorrall/fun_with_json_api)
 [![Gem Version](https://badge.fury.io/rb/fun_with_json_api.svg)](https://badge.fury.io/rb/fun_with_json_api)
 
@@ -16,7 +19,7 @@ end
 and an Article Deserializer:
 
 ```
-class ArticlesDeserializer
+class ArticlesDeserializer < FunWithJsonApi::Deserializer
   resource_class Article
 
   attribute :title
@@ -42,7 +45,7 @@ will convert:
 }
 ```
 
-Into parameters than can create/update an `Article`:
+Into parameters than can create an `Article`:
 
 ```
 {
@@ -51,9 +54,69 @@ Into parameters than can create/update an `Article`:
 }
 ```
 
-With a sprinking of json_api validation, and a lot of semantically correct json api error responses.
+Or calling `FunWithJsonApi.deserialize_resource(params, ArticlesDeserializer, article)`,
+when the Article has an id of '24', it will convert:
 
-### Attribute Types
+```
+{
+  "id": '24'
+  "type": "articles",
+  "attributes": {
+    "title": "Rails is Omakase"
+  },
+  "relationships": {
+    "author": {
+      "data": { "type": "people", "id": "9" }
+    }
+  }
+}
+```
+
+into parameters that can update the Article, or it will raise an exception with the correct http
+status and I18n debugging information.
+
+## Attributes
+
+Attributes are declared within a Deserializer class. i.e.
+
+```
+class ExampleDeserializer < FunWithJsonApi::Deserializer
+  attribute :foo
+end
+```
+
+### Attribute Aliases
+
+They can be renamed by adding an 'as:' argument:
+
+`attribute :foo, as: :bar`
+
+Will convert an json_api attribute with the key `foo` into a parameter with the key 'bar', ie:
+
+```
+{
+  data: {
+    ...
+    attributes: {
+      foo: 'example'
+    }
+  }
+}
+
+=> { bar: 'example' }
+```
+
+### Attribute Formats
+
+Attributes can be coerced into a expected Ruby Object, by providing a 'format:' argument:
+
+`attribute :foo, format: :integer`
+
+Will allow any integer attribute value for `foo`, a string that can be parsed into an integer,
+or `null`, but will not allow any non-numerical characters (i.e "bar", 'twenty two' or '12,000.10')
+
+The following formats can be provided to an attribute, and will be coerced into the expected
+Ruby Object.
 
 | Attribute Type      | Format      | Ruby Object        | Example                                |
 | ------------------- | ----------- | ------------------ | -------------------------------------- |
