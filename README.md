@@ -91,7 +91,7 @@ They can be renamed by adding an 'as:' argument:
 
 `attribute :foo, as: :bar`
 
-Will convert an json_api attribute with the key `foo` into a parameter with the key 'bar', ie:
+Will convert an json_api attribute with the key `foo` into a parameter with the key `bar`, ie:
 
 ```
 {
