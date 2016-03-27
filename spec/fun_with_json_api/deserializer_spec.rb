@@ -42,6 +42,7 @@ describe FunWithJsonApi::Deserializer do
       it 'sets id_param to id for all new deserializer instances' do
         instance = Class.new(described_class).create
         expect(instance.id_param).to eq :id
+        expect(instance.attributes.size).to eq 0
       end
     end
     context 'with a name argument' do
@@ -50,24 +51,26 @@ describe FunWithJsonApi::Deserializer do
           id_param :code
         end.create
         expect(instance.id_param).to eq :code
+        expect(instance.attributes.size).to eq 0
       end
       it 'converts the name parameter to a symbol' do
         instance = Class.new(described_class) do
           id_param 'code'
         end.create
         expect(instance.id_param).to eq :code
+        expect(instance.attributes.size).to eq 0
       end
     end
     context 'with a format argument' do
       it 'adds an id attribute with format to all new deserializer instances' do
         instance = Class.new(described_class) do
-          id_param format: :string
+          id_param format: :integer
         end.create
         expect(instance.id_param).to eq :id
         expect(instance.attributes.size).to eq 1
 
         attribute = instance.attributes.first
-        expect(attribute).to be_kind_of(FunWithJsonApi::Attributes::StringAttribute)
+        expect(attribute).to be_kind_of(FunWithJsonApi::Attributes::IntegerAttribute)
         expect(attribute.name).to eq :id
         expect(attribute.as).to eq :id
       end
@@ -75,13 +78,13 @@ describe FunWithJsonApi::Deserializer do
     context 'with a name and format argument' do
       it 'adds an aliased id attribute with format to all new deserializer instances' do
         instance = Class.new(described_class) do
-          id_param :code, format: :integer
+          id_param :code, format: :uuid_v4
         end.create
         expect(instance.id_param).to eq :code
         expect(instance.attributes.size).to eq 1
 
         attribute = instance.attributes.first
-        expect(attribute).to be_kind_of(FunWithJsonApi::Attributes::IntegerAttribute)
+        expect(attribute).to be_kind_of(FunWithJsonApi::Attributes::UuidV4Attribute)
         expect(attribute.name).to eq :id
         expect(attribute.as).to eq :code
       end
@@ -364,6 +367,46 @@ describe FunWithJsonApi::Deserializer do
             )
             expect(payload.detail).to eq(
               I18n.t('fun_with_json_api.exceptions.invalid_integer_attribute')
+            )
+            expect(payload.pointer).to eq '/data/attributes/example'
+          end
+        end
+      end
+    end
+
+    context 'with a uuid_v4 format' do
+      it 'allows uuid_v4 numbers as strings' do
+        deserializer = deserializer_with_attribute(:example, format: :uuid_v4)
+        expect(deserializer.parse_example('f47ac10b-58cc-4372-a567-0e02b2c3d479')).to eq(
+          'f47ac10b-58cc-4372-a567-0e02b2c3d479'
+        )
+      end
+      it 'allows a nil value' do
+        deserializer = deserializer_with_attribute(:example, format: :uuid_v4)
+        expect(deserializer.parse_example(nil)).to be nil
+      end
+      it 'raises an InvalidAttribute error an for invalid uuid_v4 value' do
+        deserializer = deserializer_with_attribute(:example, format: :uuid_v4)
+        [
+          'abc',
+          12.0,
+          '12.0',
+          '6ba7b810-9dad-11d1-80b4-00c04fd430c8', # RFC 4122 version 3
+          'f47ac10b58cc4372a5670e02b2c3d479' # uuid without dashes
+        ].each do |value|
+          expect do
+            deserializer.parse_example(value)
+          end.to raise_error(FunWithJsonApi::Exceptions::InvalidAttribute) do |e|
+            expect(e.payload.size).to eq 1
+
+            payload = e.payload.first
+            expect(payload.status).to eq '400'
+            expect(payload.code).to eq 'invalid_attribute'
+            expect(payload.title).to eq(
+              I18n.t('fun_with_json_api.exceptions.invalid_attribute')
+            )
+            expect(payload.detail).to eq(
+              I18n.t('fun_with_json_api.exceptions.invalid_uuid_v4_attribute')
             )
             expect(payload.pointer).to eq '/data/attributes/example'
           end
