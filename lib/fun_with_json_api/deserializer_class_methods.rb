@@ -76,6 +76,11 @@ module FunWithJsonApi
     end
 
     def type_from_class_name
+      if name.nil?
+        Rails.logger.warn 'Unable to determine type for anonymous Deserializer'
+        return nil
+      end
+
       resource_class_name = name.demodulize.sub(/Deserializer/, '').underscore
       if ActiveModelSerializers.config.jsonapi_resource_type == :singular
         resource_class_name.singularize

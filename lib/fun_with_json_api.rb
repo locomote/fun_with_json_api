@@ -32,17 +32,17 @@ module FunWithJsonApi
     deserialize(api_document, deserializer_class, resource, options)
   end
 
-  def find_resource(api_document, deserializer_class)
+  def find_resource(api_document, deserializer_class, options = {})
     # Prepare the deserializer for loading a resource
-    deserializer = deserializer_class.create(attributes: [], relationships: [])
+    deserializer = deserializer_class.create(options.merge(attributes: [], relationships: []))
 
     # Load the resource from the document id
     FunWithJsonApi::FindResourceFromDocument.find(api_document, deserializer)
   end
 
-  def find_collection(api_document, deserializer_class)
+  def find_collection(api_document, deserializer_class, options = {})
     # Prepare the deserializer for loading a resource
-    deserializer = deserializer_class.create(attributes: [], relationships: [])
+    deserializer = deserializer_class.create(options.merge(attributes: [], relationships: []))
 
     # Load the collection from the document
     FunWithJsonApi::FindCollectionFromDocument.find(api_document, deserializer)

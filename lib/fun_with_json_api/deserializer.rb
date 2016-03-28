@@ -23,15 +23,16 @@ module FunWithJsonApi
 
     def initialize(options = {})
       @id_param = options.fetch(:id_param) { self.class.id_param }
-      @type = options[:type]
+      @type = options.fetch(:type) { self.class.type }
       @resource_class = options[:resource_class]
-      @attributes = filter_attributes_by_name(options[:attributes], self.class.attributes)
-      @relationships = filter_attributes_by_name(options[:relationships], self.class.relationships)
+      @resource_collection = options[:"#{type}_collection"] if @type
+      load_attributes_from_options(options)
+      load_relationships_from_options(options)
     end
 
     # Loads a collection of of `resource_class` instances with `id_param` matching `id_values`
     def load_collection_from_id_values(id_values)
-      resource_class.where(id_param => id_values)
+      resource_collection.where(id_param => id_values)
     end
 
     def format_collection_ids(collection)
@@ -40,7 +41,7 @@ module FunWithJsonApi
 
     # Loads a single instance of `resource_class` with a `id_param` matching `id_value`
     def load_resource_from_id_value(id_value)
-      resource_class.find_by(id_param => id_value)
+      resource_collection.find_by(id_param => id_value)
     end
 
     # Takes a parsed params hash from ActiveModelSerializers::Deserialization and sanitizes values
@@ -51,15 +52,23 @@ module FunWithJsonApi
       ]
     end
 
-    def type
-      @type ||= self.class.type
-    end
-
     def resource_class
       @resource_class ||= self.class.resource_class
     end
 
+    def resource_collection
+      @resource_collection ||= resource_class
+    end
+
     private
+
+    def load_attributes_from_options(options)
+      @attributes = filter_attributes_by_name(options[:attributes], self.class.attributes)
+    end
+
+    def load_relationships_from_options(options)
+      @relationships = filter_attributes_by_name(options[:relationships], self.class.relationships)
+    end
 
     def filter_attributes_by_name(attribute_names, attributes)
       if attribute_names

@@ -98,6 +98,22 @@ describe FunWithJsonApi do
         expect(actual).to eq(resource)
       end
     end
+
+    context 'with a resource_collection argument' do
+      let!(:resource_a) { ARModels::Author.create(id: 42, name: 'Jack', code: 'foo') }
+      let!(:resource_b) { ARModels::Author.create(id: 43, name: 'John', code: 'foo') }
+      let(:document) { { data: { id: 'foo', type: 'person' } } }
+
+      it 'returns the resource scoped to the resource_collection' do
+        actual = described_class.find_resource(
+          document,
+          ARModels::AuthorDeserializer,
+          id_param: 'code',
+          person_collection: ARModels::Author.where(name: 'Jack')
+        )
+        expect(actual).to eq(resource_a)
+      end
+    end
   end
 
   describe '.find_collection' do
@@ -109,6 +125,23 @@ describe FunWithJsonApi do
       it 'returns all matching resources' do
         actual = described_class.find_collection(document, ARModels::AuthorDeserializer)
         expect(actual).to eq([resource_a, resource_b])
+      end
+    end
+
+    context 'with a resource_collection argument' do
+      let!(:resource_a) { ARModels::Author.create(id: 42, name: 'Jack', code: 'foo') }
+      let!(:resource_b) { ARModels::Author.create(id: 43, name: 'John', code: 'foo') }
+      let!(:resource_c) { ARModels::Author.create(id: 44, name: 'Jack', code: 'bar') }
+      let(:document) { { data: [{ id: 'foo', type: 'person' }, { id: 'bar', type: 'person' }] } }
+
+      it 'returns the resource scoped to the resource_collection' do
+        actual = described_class.find_collection(
+          document,
+          ARModels::AuthorDeserializer,
+          id_param: 'code',
+          person_collection: ARModels::Author.where(name: 'Jack')
+        )
+        expect(actual).to eq([resource_a, resource_c])
       end
     end
 
