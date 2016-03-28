@@ -60,7 +60,7 @@ module FunWithJsonApi
     def build_invalid_document_error
       payload = ExceptionPayload.new
       payload.pointer = '/data'
-      payload.detail = 'Expected document data to be Hash or null'
+      payload.detail = document_is_invalid_message
       Exceptions::InvalidDocument.new(
         "Expected root data element with hash or null: #{api_document.inspect}",
         payload
@@ -83,6 +83,13 @@ module FunWithJsonApi
       payload.pointer = '/data/id'
       payload.detail = missing_resource_message
       Exceptions::MissingResource.new(message, payload)
+    end
+
+    def document_is_invalid_message
+      I18n.t(
+        :invalid_document,
+        scope: 'fun_with_json_api.find_resource_from_document'
+      )
     end
 
     def document_type_does_not_match_endpoint_message

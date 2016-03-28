@@ -90,7 +90,7 @@ describe FunWithJsonApi::FindResourceFromDocument do
             expect(payload.code).to eq 'invalid_document'
             expect(payload.pointer).to eq '/data'
             expect(payload.title).to eq 'Request json_api document is invalid'
-            expect(payload.detail).to eq 'Expected document data to be Hash or null'
+            expect(payload.detail).to eq 'Expected document data to be a Hash or null'
             expect(payload.status).to eq '400'
           end
         end

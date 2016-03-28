@@ -24,5 +24,6 @@ en:
       resource_id_can_not_be_client_generated: "The current endpoint does not allow you to set an id for a new '%{resource}' resource"
       resource_id_has_already_been_assigned: "The provided id for a new '%{resource}' resource has already been used by another resource: %{id}"
     find_resource_from_document:
+      invalid_document: "Expected document data to be a Hash or null"
       invalid_document_type: "Expected document type to be a '%{resource}' resource"
       missing_resource: "Unable to find '%{resource}' with matching id: '%{resource_id}'"
