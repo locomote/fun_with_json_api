@@ -45,7 +45,7 @@ describe FunWithJsonApi::FindCollectionFromDocument do
               payload = e.payload.first
               expect(payload.status).to eq '404'
               expect(payload.code).to eq 'missing_resource'
-              expect(payload.title).to eq I18n.t('fun_with_json_api.exceptions.missing_resource')
+              expect(payload.title).to eq 'Unable to find the requested resource'
               expect(payload.detail).to eq "Unable to find 'person' with matching id: '42'"
               expect(payload.pointer).to eq '/data/0/id'
             end
@@ -104,14 +104,14 @@ describe FunWithJsonApi::FindCollectionFromDocument do
               payload_a = e.payload.first
               expect(payload_a.status).to eq '404'
               expect(payload_a.code).to eq 'missing_resource'
-              expect(payload_a.title).to eq I18n.t('fun_with_json_api.exceptions.missing_resource')
+              expect(payload_a.title).to eq 'Unable to find the requested resource'
               expect(payload_a.detail).to eq "Unable to find 'person' with matching id: '42'"
               expect(payload_a.pointer).to eq '/data/0/id'
 
               payload_b = e.payload.last
               expect(payload_b.status).to eq '404'
               expect(payload_b.code).to eq 'missing_resource'
-              expect(payload_b.title).to eq I18n.t('fun_with_json_api.exceptions.missing_resource')
+              expect(payload_b.title).to eq 'Unable to find the requested resource'
               expect(payload_b.detail).to eq "Unable to find 'person' with matching id: '44'"
               expect(payload_b.pointer).to eq '/data/2/id'
             end
@@ -129,7 +129,7 @@ describe FunWithJsonApi::FindCollectionFromDocument do
             payload = e.payload.first
             expect(payload.code).to eq 'invalid_document_type'
             expect(payload.pointer).to eq '/data/0/type'
-            expect(payload.title).to eq 'Request json_api document type does not match endpoint'
+            expect(payload.title).to eq 'Request json_api data type does not match endpoint'
             expect(payload.detail).to eq "Expected 'blargh' to be a 'person' resource"
             expect(payload.status).to eq '409'
           end
@@ -154,14 +154,14 @@ describe FunWithJsonApi::FindCollectionFromDocument do
             payload_a = e.payload.first
             expect(payload_a.code).to eq 'invalid_document_type'
             expect(payload_a.pointer).to eq '/data/1/type'
-            expect(payload_a.title).to eq 'Request json_api document type does not match endpoint'
+            expect(payload_a.title).to eq 'Request json_api data type does not match endpoint'
             expect(payload_a.detail).to eq "Expected 'foobar' to be a 'person' resource"
             expect(payload_a.status).to eq '409'
 
             payload_b = e.payload.last
             expect(payload_b.code).to eq 'invalid_document_type'
             expect(payload_b.pointer).to eq '/data/2/type'
-            expect(payload_b.title).to eq 'Request json_api document type does not match endpoint'
+            expect(payload_b.title).to eq 'Request json_api data type does not match endpoint'
             expect(payload_b.detail).to eq "Expected 'blargh' to be a 'person' resource"
             expect(payload_b.status).to eq '409'
           end
@@ -193,7 +193,7 @@ describe FunWithJsonApi::FindCollectionFromDocument do
             expect(payload.code).to eq 'invalid_document'
             expect(payload.pointer).to eq '/data'
             expect(payload.title).to eq 'Request json_api document is invalid'
-            expect(payload.detail).to eq 'Expected document data to be an Array of resources'
+            expect(payload.detail).to eq 'Expected data to be an Array of resources'
             expect(payload.status).to eq '400'
           end
         end

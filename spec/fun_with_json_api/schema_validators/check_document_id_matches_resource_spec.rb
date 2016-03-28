@@ -26,8 +26,8 @@ describe FunWithJsonApi::SchemaValidators::CheckDocumentIdMatchesResource do
             payload = e.payload.first
             expect(payload.code).to eq 'invalid_document_identifier'
             expect(payload.pointer).to eq '/data/id'
-            expect(payload.title).to eq 'Request json_api document id does not expected resource'
-            expect(payload.detail).to eq 'Expected document id to match resource at endpoint: 11'
+            expect(payload.title).to eq 'Request json_api data id is invalid'
+            expect(payload.detail).to eq 'Expected data id to match resource at endpoint: 11'
             expect(payload.status).to eq '409'
           end
         end
@@ -58,7 +58,7 @@ describe FunWithJsonApi::SchemaValidators::CheckDocumentIdMatchesResource do
               expect(payload.code).to eq 'illegal_client_generated_identifier'
               expect(payload.pointer).to eq '/data/id'
               expect(payload.title).to eq(
-                'Request json_api attempted to assign unsupported client-generated id'
+                'Request json_api attempted to set an unsupported client-generated id'
               )
               expect(payload.detail).to eq(
                 "The current endpoint does not allow you to set an id for a new 'examples' resource"
@@ -97,7 +97,7 @@ describe FunWithJsonApi::SchemaValidators::CheckDocumentIdMatchesResource do
                 expect(payload.code).to eq 'invalid_client_generated_identifier'
                 expect(payload.pointer).to eq '/data/id'
                 expect(payload.title).to eq(
-                  'Request json_api document id attribute has already been used for an existing'\
+                  'Request json_api data id has already been used for an existing'\
                   ' resource'
                 )
                 expect(payload.detail).to eq(

@@ -20,8 +20,8 @@ describe FunWithJsonApi::SchemaValidators::CheckDocumentTypeMatchesResource do
           payload = e.payload.first
           expect(payload.code).to eq 'invalid_document_type'
           expect(payload.pointer).to eq '/data/type'
-          expect(payload.title).to eq 'Request json_api document type does not match endpoint'
-          expect(payload.detail).to eq "Expected document type to be a 'foobar' resource"
+          expect(payload.title).to eq 'Request json_api data type does not match endpoint'
+          expect(payload.detail).to eq "Expected data type to be a 'foobar' resource"
           expect(payload.status).to eq '409'
         end
       end

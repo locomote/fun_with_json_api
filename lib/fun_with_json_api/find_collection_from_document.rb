@@ -63,7 +63,7 @@ module FunWithJsonApi
     def build_invalid_document_error
       payload = ExceptionPayload.new
       payload.pointer = '/data'
-      payload.detail = 'Expected document data to be an Array of resources'
+      payload.detail = 'Expected data to be an Array of resources'
       Exceptions::InvalidDocument.new(
         "Expected root data element with an Array: #{api_document.inspect}",
         payload
