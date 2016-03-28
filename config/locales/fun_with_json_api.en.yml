@@ -27,3 +27,7 @@ en:
       invalid_document: "Expected document data to be a Hash or null"
       invalid_document_type: "Expected document type to be a '%{resource}' resource"
       missing_resource: "Unable to find '%{resource}' with matching id: '%{resource_id}'"
+    find_collection_from_document:
+      invalid_document: "Expected document data to be a Array of '%{resource}' resources"
+      invalid_document_type: "Expected '%{type}' to be a '%{resource}' resource"
+      missing_resource: "Unable to find '%{resource}' with matching id: '%{resource_id}'"

@@ -34,6 +34,10 @@ module FunWithJsonApi
       resource_class.where(id_param => id_values)
     end
 
+    def format_collection_ids(collection)
+      collection.map { |resource| resource.public_send(id_param).to_s }
+    end
+
     # Loads a single instance of `resource_class` with a `id_param` matching `id_value`
     def load_resource_from_id_value(id_value)
       resource_class.find_by(id_param => id_value)

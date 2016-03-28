@@ -4,6 +4,7 @@ require 'fun_with_json_api/attribute'
 require 'fun_with_json_api/pre_deserializer'
 require 'fun_with_json_api/deserializer'
 require 'fun_with_json_api/schema_validator'
+require 'fun_with_json_api/find_collection_from_document'
 require 'fun_with_json_api/find_resource_from_document'
 
 # Makes working with JSON:API fun!
@@ -37,6 +38,14 @@ module FunWithJsonApi
 
     # Load the resource from the document id
     FunWithJsonApi::FindResourceFromDocument.find(api_document, deserializer)
+  end
+
+  def find_collection(api_document, deserializer_class)
+    # Prepare the deserializer for loading a resource
+    deserializer = deserializer_class.create(attributes: [], relationships: [])
+
+    # Load the collection from the document
+    FunWithJsonApi::FindCollectionFromDocument.find(api_document, deserializer)
   end
 end
 

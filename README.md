@@ -104,7 +104,30 @@ A document with an empty data attribute:
 }
 ```
 
-will return `nil`. This method is very useful for defining a has_one or belongs_to relationship
+will return `nil`. This method is very useful for defining a `has_one` or `belongs_to` relationship
+controller.
+
+## Find Collection
+
+With a document referencing many existing Users:
+
+```
+{
+  "data": [{ "id": "42", "type": "people" }, { "id": "43", "type": "people" }]
+}
+```
+
+Calling `FunWithJsonApi.find_collection(params, UserDeserializer)`, will return all requested Users.
+
+A document with an empty array:
+
+```
+{
+  "data": []
+}
+```
+
+will return `[]`. This method is very useful for defining a `has_many` relationship
 controller.
 
 ## Attributes

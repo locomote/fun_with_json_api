@@ -99,4 +99,26 @@ describe FunWithJsonApi do
       end
     end
   end
+
+  describe '.find_collection' do
+    context 'with resources matching the document' do
+      let!(:resource_a) { ARModels::Author.create(id: 42) }
+      let!(:resource_b) { ARModels::Author.create(id: 43) }
+      let(:document) { { data: [{ id: '42', type: 'person' }, { id: '43', type: 'person' }] } }
+
+      it 'returns all matching resources' do
+        actual = described_class.find_collection(document, ARModels::AuthorDeserializer)
+        expect(actual).to eq([resource_a, resource_b])
+      end
+    end
+
+    context 'with an empty array' do
+      let(:document) { { data: [] } }
+
+      it 'returns an empty array' do
+        actual = described_class.find_collection(document, ARModels::AuthorDeserializer)
+        expect(actual).to eq([])
+      end
+    end
+  end
 end
