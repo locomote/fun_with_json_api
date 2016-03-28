@@ -14,10 +14,13 @@ describe FunWithJsonApi::DeserializerClassMethods do
 
       expect(relationship.name).to eq :foo
       expect(relationship.as).to eq :foo
-      expect(relationship.deserializer).to be_kind_of(foos_deserializer_class)
+      expect(
+        relationship.create_deserializer_with_options({})
+      ).to be_kind_of(foos_deserializer_class)
 
-      expect(relationship.deserializer.attributes).to eq []
-      expect(relationship.deserializer.relationships).to eq []
+      deserializer = relationship.create_deserializer_with_options({})
+      expect(deserializer.attributes).to eq []
+      expect(deserializer.relationships).to eq []
     end
   end
 
@@ -34,10 +37,13 @@ describe FunWithJsonApi::DeserializerClassMethods do
 
       expect(relationship.name).to eq :foos
       expect(relationship.as).to eq :foo
-      expect(relationship.deserializer).to be_kind_of(foos_deserializer_class)
+      expect(
+        relationship.create_deserializer_with_options({})
+      ).to be_kind_of(foos_deserializer_class)
 
-      expect(relationship.deserializer.attributes).to eq []
-      expect(relationship.deserializer.relationships).to eq []
+      deserializer = relationship.create_deserializer_with_options({})
+      expect(deserializer.attributes).to eq []
+      expect(deserializer.relationships).to eq []
     end
 
     it 'does not allow pluralized "as" values' do

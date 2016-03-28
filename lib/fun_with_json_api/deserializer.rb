@@ -60,7 +60,15 @@ module FunWithJsonApi
       @resource_collection ||= resource_class
     end
 
+    def relationship_deserializer_for(resource_name)
+      relationship_deserializers.fetch(resource_name)
+    end
+
     private
+
+    def relationship_deserializers
+      @relationship_deserializers ||= {}
+    end
 
     def load_attributes_from_options(options)
       @attributes = filter_attributes_by_name(options[:attributes], self.class.attributes)
@@ -68,9 +76,12 @@ module FunWithJsonApi
 
     def load_relationships_from_options(options)
       @relationships = filter_attributes_by_name(
-        options[:relationships],
-        self.class.relationships(options)
-      )
+        options[:relationships], self.class.relationships
+      ).each do |relationship|
+        deserializer_options = options.fetch(relationship.name, {})
+        relationship_deserializers[relationship.name] =
+          relationship.create_deserializer_with_options(deserializer_options)
+      end
     end
 
     def filter_attributes_by_name(attribute_names, attributes)
