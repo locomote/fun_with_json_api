@@ -3,7 +3,7 @@ require 'spec_helper'
 describe FunWithJsonApi::PreDeserializer do
   describe '.parse' do
     describe 'document attributes parsing' do
-      it 'cpmverts known attribute values into a hash' do
+      it 'converts known attribute values into a hash' do
         deserializer = Class.new(FunWithJsonApi::Deserializer) do
           attribute :foo
         end.create
