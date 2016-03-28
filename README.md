@@ -75,6 +75,38 @@ when the Article has an id of '24', it will convert:
 into parameters that can update the Article, or it will raise an exception with the correct http
 status and I18n debugging information.
 
+## Find Resource
+
+With a User Deserializer:
+
+```
+class UserDeserializer < FunWithJsonApi::Deserializer
+  type 'people'
+  resource_class User
+end
+```
+
+and a document referencing a existing User:
+
+```
+{
+  "data": { "id": "42", "type": "people" }
+}
+```
+
+Calling `FunWithJsonApi.find_resource(params, UserDeserializer)`, will return the User.
+
+A document with an empty data attribute:
+
+```
+{
+  "data": null
+}
+```
+
+will return `nil`. This method is very useful for defining a has_one or belongs_to relationship
+controller.
+
 ## Attributes
 
 Attributes are declared within a Deserializer class. i.e.

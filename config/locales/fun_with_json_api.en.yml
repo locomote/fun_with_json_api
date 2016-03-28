@@ -6,6 +6,7 @@ en:
       invalid_client_generated_identifier: 'Request json_api document id attribute has already been used for an existing resource'
       illegal_client_generated_identifier: 'Request json_api attempted to assign unsupported client-generated id'
       invalid_document_type: 'Request json_api document type does not match endpoint'
+      missing_resource: 'Unable to find the requested resource'
       invalid_attribute: 'Request json_api document attribute is invalid'
       invalid_relationship: 'Request json_api document relationship is invalid'
       missing_relationship: 'Unable to find the requested relationship'
@@ -22,3 +23,6 @@ en:
       document_type_does_not_match_endpoint: "Expected document type to be a '%{expected}' resource"
       resource_id_can_not_be_client_generated: "The current endpoint does not allow you to set an id for a new '%{resource}' resource"
       resource_id_has_already_been_assigned: "The provided id for a new '%{resource}' resource has already been used by another resource: %{id}"
+    find_resource_from_document:
+      invalid_document_type: "Expected document type to be a '%{resource}' resource"
+      missing_resource: "Unable to find '%{resource}' with matching id: '%{resource_id}'"

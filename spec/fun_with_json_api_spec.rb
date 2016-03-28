@@ -87,4 +87,16 @@ describe FunWithJsonApi do
       end
     end
   end
+
+  describe '.find_resource' do
+    context 'with a resource matching the document' do
+      let!(:resource) { ARModels::Author.create(id: 42) }
+      let(:document) { { data: { id: '42', type: 'person' } } }
+
+      it 'returns the matching resource' do
+        actual = described_class.find_resource(document, ARModels::AuthorDeserializer)
+        expect(actual).to eq(resource)
+      end
+    end
+  end
 end

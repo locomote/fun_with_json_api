@@ -4,6 +4,7 @@ require 'fun_with_json_api/attribute'
 require 'fun_with_json_api/pre_deserializer'
 require 'fun_with_json_api/deserializer'
 require 'fun_with_json_api/schema_validator'
+require 'fun_with_json_api/find_resource_from_document'
 
 # Makes working with JSON:API fun!
 module FunWithJsonApi
@@ -28,6 +29,14 @@ module FunWithJsonApi
   def deserialize_resource(api_document, deserializer_class, resource, options = {})
     raise ArgumentError, 'resource cannot be nil' if resource.nil?
     deserialize(api_document, deserializer_class, resource, options)
+  end
+
+  def find_resource(api_document, deserializer_class)
+    # Prepare the deserializer for loading a resource
+    deserializer = deserializer_class.create(attributes: [], relationships: [])
+
+    # Load the resource from the document id
+    FunWithJsonApi::FindResourceFromDocument.find(api_document, deserializer)
   end
 end
 
