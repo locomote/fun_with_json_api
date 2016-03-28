@@ -78,20 +78,23 @@ module FunWithJsonApi
       end
 
       def build_missing_relationship_error_from_collection(collection, values)
-        collection_values = collection.map { |resource| resource.public_send(id_param).to_s }
-        missing_values = values.reject { |value| collection_values.include?(value.to_s) }
-        payload = missing_values.map do |value|
-          build_missing_relationship_payload(value)
-        end
+        collection_ids = deserializer.format_collection_ids(collection)
+
+        payload = values.each_with_index.map do |resource_id, index|
+          next if collection_ids.include?(resource_id)
+          build_missing_relationship_payload(resource_id, index)
+        end.reject(&:nil?)
+
+        missing_values = values.reject { |value| collection_ids.include?(value.to_s) }
         exception_message = "Couldn't find #{resource_class} items with "\
                             "#{id_param} in #{missing_values.inspect}"
         Exceptions::MissingRelationship.new(exception_message, payload)
       end
 
-      def build_missing_relationship_payload(value)
+      def build_missing_relationship_payload(resource_id, index)
         ExceptionPayload.new.tap do |payload|
-          payload.pointer = "/data/relationships/#{name}/id"
-          payload.detail = "Unable to find '#{type}' with matching id: #{value.inspect}"
+          payload.pointer = "/data/relationships/#{name}/#{index}/id"
+          payload.detail = "Unable to find '#{type}' with matching id: \"#{resource_id}\""
         end
       end
     end

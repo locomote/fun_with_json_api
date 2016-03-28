@@ -516,7 +516,7 @@ describe FunWithJsonApi::Deserializer do
           expect(payload.status).to eq '404'
           expect(payload.code).to eq 'missing_relationship'
           expect(payload.title).to eq I18n.t('fun_with_json_api.exceptions.missing_relationship')
-          expect(payload.pointer).to eq '/data/relationships/examples/id'
+          expect(payload.pointer).to eq '/data/relationships/examples/1/id'
           expect(payload.detail).to eq "Unable to find 'persons' with matching id: \"blargh\""
         end
       end
@@ -534,14 +534,14 @@ describe FunWithJsonApi::Deserializer do
           expect(payload_a.status).to eq '404'
           expect(payload_a.code).to eq 'missing_relationship'
           expect(payload_a.title).to eq I18n.t('fun_with_json_api.exceptions.missing_relationship')
-          expect(payload_a.pointer).to eq '/data/relationships/examples/id'
+          expect(payload_a.pointer).to eq '/data/relationships/examples/0/id'
           expect(payload_a.detail).to eq "Unable to find 'persons' with matching id: \"foobar\""
 
           payload_b = e.payload.last
           expect(payload_b.status).to eq '404'
           expect(payload_b.code).to eq 'missing_relationship'
           expect(payload_b.title).to eq I18n.t('fun_with_json_api.exceptions.missing_relationship')
-          expect(payload_b.pointer).to eq '/data/relationships/examples/id'
+          expect(payload_b.pointer).to eq '/data/relationships/examples/1/id'
           expect(payload_b.detail).to eq "Unable to find 'persons' with matching id: \"blargh\""
         end
       end
