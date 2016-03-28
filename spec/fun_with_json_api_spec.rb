@@ -85,6 +85,48 @@ describe FunWithJsonApi do
           comment_ids: [5, 12]
         )
       end
+      it 'allows for relationships to be scoped' do
+        post = ARModels::Post.create(id: 1)
+        ARModels::Author.create(id: 9, name: 'John', code: 'foo')
+        ARModels::Author.create(id: 10, name: 'John', code: 'bar')
+        ARModels::Comment.create(id: 5)
+        ARModels::Comment.create(id: 12)
+
+        post_json = {
+          'data': {
+            'type': 'posts',
+            'id': '1',
+            'attributes': {
+              'title': 'Rails is Omakase',
+              'body': 'This is my post body'
+            },
+            'relationships': {
+              'author': {
+                'data': { 'type': 'people', 'id': 'John' }
+              },
+              'comments': {
+                'data': [
+                  { 'type': 'comments', 'id': '5' },
+                  { 'type': 'comments', 'id': '12' }
+                ]
+              }
+            }
+          }
+        }
+
+        post_params = described_class.deserialize(
+          post_json,
+          ARModels::PostDeserializer,
+          post,
+          author: { id_param: :name, resource_collection: ARModels::Author.where(code: 'foo') }
+        )
+        expect(post_params).to eq(
+          title: 'Rails is Omakase',
+          body: 'This is my post body',
+          author_id: 9,
+          comment_ids: [5, 12]
+        )
+      end
     end
   end
 
@@ -109,7 +151,7 @@ describe FunWithJsonApi do
           document,
           ARModels::AuthorDeserializer,
           id_param: 'code',
-          person_collection: ARModels::Author.where(name: 'Jack')
+          resource_collection: ARModels::Author.where(name: 'Jack')
         )
         expect(actual).to eq(resource_a)
       end
@@ -139,7 +181,7 @@ describe FunWithJsonApi do
           document,
           ARModels::AuthorDeserializer,
           id_param: 'code',
-          person_collection: ARModels::Author.where(name: 'Jack')
+          resource_collection: ARModels::Author.where(name: 'Jack')
         )
         expect(actual).to eq([resource_a, resource_c])
       end

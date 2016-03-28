@@ -18,6 +18,7 @@ module FunWithJsonApi
       def initialize(name, deserializer_class, options = {})
         super(name, options)
         @deserializer_class = deserializer_class
+        @deserializer_options = options
       end
 
       def deserializer
@@ -48,8 +49,10 @@ module FunWithJsonApi
         else
           @deserializer_class
         end.create(
-          attributes: [],
-          relationships: []
+          @deserializer_options.merge(
+            attributes: [],
+            relationships: []
+          )
         )
       end
 

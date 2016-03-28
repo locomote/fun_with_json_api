@@ -45,7 +45,7 @@ describe FunWithJsonApi::DeserializerClassMethods do
       expect do
         Class.new(FunWithJsonApi::Deserializer) do
           has_many :foos, -> { foos_deserializer_class }, as: 'foos'
-        end
+        end.relationships
       end.to raise_error(ArgumentError, 'Use a singular relationship as value: {as: :foo}')
     end
   end

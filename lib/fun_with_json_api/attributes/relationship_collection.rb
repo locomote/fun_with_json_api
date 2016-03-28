@@ -13,6 +13,7 @@ module FunWithJsonApi
       def initialize(name, deserializer_class, options = {})
         super(name, options.reverse_merge(as: name.to_s.singularize.to_sym))
         @deserializer_class = deserializer_class
+        @deserializer_options = options
 
         if as.to_s != as.to_s.singularize
           raise ArgumentError, "Use a singular relationship as value: {as: :#{as.to_s.singularize}}"
@@ -64,8 +65,10 @@ module FunWithJsonApi
         else
           @deserializer_class
         end.create(
-          attributes: [],
-          relationships: []
+          @deserializer_options.merge(
+            attributes: [],
+            relationships: []
+          )
         )
       end
 

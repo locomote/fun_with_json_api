@@ -25,7 +25,7 @@ module FunWithJsonApi
       @id_param = options.fetch(:id_param) { self.class.id_param }
       @type = options.fetch(:type) { self.class.type }
       @resource_class = options[:resource_class]
-      @resource_collection = options[:"#{type}_collection"] if @type
+      @resource_collection = options[:resource_collection] if @type
       load_attributes_from_options(options)
       load_relationships_from_options(options)
     end
@@ -67,7 +67,10 @@ module FunWithJsonApi
     end
 
     def load_relationships_from_options(options)
-      @relationships = filter_attributes_by_name(options[:relationships], self.class.relationships)
+      @relationships = filter_attributes_by_name(
+        options[:relationships],
+        self.class.relationships(options)
+      )
     end
 
     def filter_attributes_by_name(attribute_names, attributes)
