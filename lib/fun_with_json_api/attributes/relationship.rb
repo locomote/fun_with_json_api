@@ -12,6 +12,7 @@ module FunWithJsonApi
 
       attr_reader :deserializer_class
       attr_reader :options
+      delegate :type, to: :deserializer
 
       def initialize(name, deserializer_class, options = {})
         super(name, options)
@@ -32,6 +33,14 @@ module FunWithJsonApi
 
         raise build_missing_relationship_error(id_value)
       end
+
+      # rubocop:disable Style/PredicateName
+
+      def has_many?
+        false
+      end
+
+      # rubocop:enable Style/PredicateName
 
       def param_value
         :"#{as}_id"

@@ -7,6 +7,7 @@ module FunWithJsonApi
 
       attr_reader :deserializer_class
       attr_reader :options
+      delegate :type, to: :deserializer
 
       def initialize(name, deserializer_class, options = {})
         super(name, options.reverse_merge(as: name.to_s.singularize.to_sym))
@@ -37,6 +38,14 @@ module FunWithJsonApi
         # Call ActiceRecord#pluck if it is available
         convert_collection_to_ids(collection)
       end
+
+      # rubocop:disable Style/PredicateName
+
+      def has_many?
+        true
+      end
+
+      # rubocop:enable Style/PredicateName
 
       # User the singular of `as` that is how AMS converts the value
       def param_value

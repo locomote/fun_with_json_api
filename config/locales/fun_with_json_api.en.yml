@@ -12,6 +12,7 @@ en:
       invalid_relationship: 'Request json_api relationship data is invalid'
       missing_relationship: 'Unable to find the requested relationship'
       unknown_relationship: 'Request json_api relationship is unsupported by the current endpoint'
+      invalid_relationship_type: 'Request json_api relationship type does not match expected resource'
       invalid_boolean_attribute: "Boolean value should only be true, false, or null"
       invalid_date_attribute: "Date value should be in the format YYYY-MM-DD"
       invalid_datetime_attribute: "Datetime value should be a ISO 8601 datetime"
@@ -23,6 +24,8 @@ en:
     schema_validators:
       document_id_does_not_match_resource: "Expected data id to match resource at endpoint: %{expected}"
       document_type_does_not_match_endpoint: "Expected data type to be a '%{expected}' resource"
+      invalid_relationship_type_in_array: "Expected '%{relationship}' relationship to be an Array of '%{relationship_type}' resource identifiers"
+      invalid_relationship_type_in_hash: "Expected '%{relationship}' relationship to be null or a '%{relationship_type}' resource identifier Hash"
       resource_id_can_not_be_client_generated: "The current endpoint does not allow you to set an id for a new '%{resource}' resource"
       resource_id_has_already_been_assigned: "The provided id for a new '%{resource}' resource has already been used by another resource: %{id}"
       unknown_attribute_for_resource: "The provided attribute '%{attribute}' can not be assigned to a '%{resource}' resource from the current endpoint"

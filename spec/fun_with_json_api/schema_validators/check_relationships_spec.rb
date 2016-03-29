@@ -8,20 +8,118 @@ describe FunWithJsonApi::SchemaValidators::CheckRelationships do
           'id' => '42',
           'type' => 'examples',
           'relationships' => {
-            'foobar' => { 'id' => '24', 'type' => 'foobars' }
+            'foobar' => {
+              'data' => relationship_data
+            }
           }
         }
       }
     end
+    let(:relationship_data) { double('relationship_data') }
     let(:deserializer) { instance_double('FunWithJsonApi::Deserializer', type: 'examples') }
     subject { described_class.call(document, deserializer) }
 
-    context 'when the document contains an relationships supported by the deserializer' do
-      let(:relationship) { instance_double('FunWithJsonApi::Relationship', name: :foobar) }
+    context 'with a has-one relationship' do
+      let(:relationship) do
+        instance_double('FunWithJsonApi::Relationship', name: :foobar, has_many?: false)
+      end
       before { allow(deserializer).to receive(:relationships).and_return([relationship]) }
 
-      it 'returns true' do
-        expect(subject).to eq true
+      context 'when the relationship item is a hash' do
+        let(:relationship_data) { { 'id' => '24', 'type' => 'foobars' } }
+
+        context 'when the type matches the relationship' do
+          before { allow(relationship).to receive(:type).and_return('foobars') }
+
+          it { is_expected.to eq true }
+        end
+
+        context 'when the type does not match the relationship' do
+          before { allow(relationship).to receive(:type).and_return('invalid') }
+
+          it 'raises a InvalidRelationshipType error' do
+            expect do
+              subject
+            end.to raise_error(FunWithJsonApi::Exceptions::InvalidRelationshipType) do |e|
+              expect(e.payload.size).to eq 1
+
+              payload = e.payload.first
+              expect(payload.code).to eq 'invalid_relationship_type'
+              expect(payload.pointer).to eq '/data/relationships/foobar/type'
+              expect(payload.title).to eq(
+                'Request json_api relationship type does not match expected resource'
+              )
+              expect(payload.detail).to eq(
+                "Expected 'foobar' relationship to be null or a 'invalid' resource identifier Hash"
+              )
+              expect(payload.status).to eq '409'
+            end
+          end
+        end
+      end
+
+      context 'when the relationship item is nil' do
+        let(:relationship_data) { nil }
+
+        it { is_expected.to eq true }
+      end
+
+      context 'when the relationship item is a array' do
+        let(:relationship_data) { [{ 'id' => '24', 'type' => 'foobars' }] }
+
+        it { is_expected.to eq true }
+      end
+    end
+
+    context 'with a has-many relationship' do
+      let(:relationship) do
+        instance_double('FunWithJsonApi::RelationshipCollection', name: :foobar, has_many?: true)
+      end
+      before { allow(deserializer).to receive(:relationships).and_return([relationship]) }
+
+      context 'when the relationship item is a array' do
+        let(:relationship_data) { [{ 'id' => '24', 'type' => 'foobars' }] }
+
+        context 'when the type matches the relationship' do
+          before { allow(relationship).to receive(:type).and_return('foobars') }
+
+          it { is_expected.to eq true }
+        end
+
+        context 'when the type does not match the deserializer' do
+          before { allow(relationship).to receive(:type).and_return('invalid') }
+
+          it 'raises a InvalidRelationshipType error' do
+            expect do
+              subject
+            end.to raise_error(FunWithJsonApi::Exceptions::InvalidRelationshipType) do |e|
+              expect(e.payload.size).to eq 1
+
+              payload = e.payload.first
+              expect(payload.code).to eq 'invalid_relationship_type'
+              expect(payload.pointer).to eq '/data/relationships/foobar/0/type'
+              expect(payload.title).to eq(
+                'Request json_api relationship type does not match expected resource'
+              )
+              expect(payload.detail).to eq(
+                "Expected 'foobar' relationship to be an Array of 'invalid' resource identifiers"
+              )
+              expect(payload.status).to eq '409'
+            end
+          end
+        end
+      end
+
+      context 'when the relationship item is a hash' do
+        let(:relationship_data) { { 'id' => '24', 'type' => 'foobars' } }
+
+        it { is_expected.to eq true }
+      end
+
+      context 'when the relationship item is nil' do
+        let(:relationship_data) { nil }
+
+        it { is_expected.to eq true }
       end
     end
 

@@ -29,7 +29,7 @@ describe FunWithJsonApi do
             },
             'relationships': {
               'author': {
-                'data': { 'type': 'people', 'id': '9' }
+                'data': { 'type': 'person', 'id': '9' }
               },
               'comments': {
                 'data': [
@@ -65,7 +65,7 @@ describe FunWithJsonApi do
             },
             'relationships': {
               'author': {
-                'data': { 'type': 'people', 'id': '9' }
+                'data': { 'type': 'person', 'id': '9' }
               },
               'comments': {
                 'data': [
@@ -102,7 +102,7 @@ describe FunWithJsonApi do
             },
             'relationships': {
               'author': {
-                'data': { 'type': 'people', 'id': 'John' }
+                'data': { 'type': 'person', 'id': 'John' }
               },
               'comments': {
                 'data': [
