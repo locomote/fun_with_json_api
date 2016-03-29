@@ -17,6 +17,13 @@ describe FunWithJsonApi::SchemaValidator do
         expect(validator_check).to receive(:call).with(kind_of(described_class))
       end
 
+      converted_document = { 'data' => { 'id' => '42', 'type' => 'examples' } }
+      [
+        FunWithJsonApi::SchemaValidators::CheckAttributes
+      ].each do |property_check|
+        expect(property_check).to receive(:call).with(converted_document, deserializer)
+      end
+
       subject
     end
   end
