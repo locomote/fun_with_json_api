@@ -63,11 +63,26 @@ module FunWithJsonApi
 
     # rubocop:enable Style/PredicateName
 
-    def relationships
-      @relationships ||= []
+    def relationship_names
+      relationships.map(&:name)
+    end
+
+    def build_relationships(options)
+      options.map do |name, relationship_options|
+        relationship = relationships.detect { |rel| rel.name == name }
+        relationship.class.create(
+          relationship.name,
+          relationship.deserializer_class,
+          relationship_options.reverse_merge(relationship.options)
+        )
+      end
     end
 
     private
+
+    def relationships
+      @relationships ||= []
+    end
 
     def add_parse_attribute_method(attribute)
       define_method(attribute.sanitize_attribute_method) do |param_value|
@@ -77,7 +92,7 @@ module FunWithJsonApi
 
     def add_parse_resource_method(resource)
       define_method(resource.sanitize_attribute_method) do |param_value|
-        resource.call(param_value, relationship_deserializer_for(resource.name))
+        relationship_for(resource.name).call(param_value)
       end
     end
 

@@ -19,7 +19,6 @@ module FunWithJsonApi
     attr_reader :resource_class
 
     attr_reader :attributes
-    attr_reader :relationships
 
     def initialize(options = {})
       @id_param = options.fetch(:id_param) { self.class.id_param }
@@ -60,27 +59,36 @@ module FunWithJsonApi
       @resource_collection ||= resource_class
     end
 
-    def relationship_deserializer_for(resource_name)
-      relationship_deserializers.fetch(resource_name)
+    def relationships
+      relationship_lookup.values
+    end
+
+    def relationship_for(resource_name)
+      relationship_lookup.fetch(resource_name)
     end
 
     private
 
-    def relationship_deserializers
-      @relationship_deserializers ||= {}
-    end
+    attr_reader :relationship_lookup
 
     def load_attributes_from_options(options)
       @attributes = filter_attributes_by_name(options[:attributes], self.class.attributes)
     end
 
-    def load_relationships_from_options(options)
-      @relationships = filter_attributes_by_name(
-        options[:relationships], self.class.relationships
+    def load_relationships_from_options(options = {})
+      options_config = {}
+
+      # Filter resources and build an options hash for each
+      filter_relationships_by_name(
+        options[:relationships], self.class.relationship_names
       ).each do |relationship|
-        deserializer_options = options.fetch(relationship.name, {})
-        relationship_deserializers[relationship.name] =
-          relationship.create_deserializer_with_options(deserializer_options)
+        options_config[relationship] = options.fetch(relationship, {})
+      end
+
+      # Build the relationships and store them into a lookup hash
+      @relationship_lookup = {}
+      self.class.build_relationships(options_config).each do |relationship|
+        @relationship_lookup[relationship.name] = relationship
       end
     end
 
@@ -89,6 +97,14 @@ module FunWithJsonApi
         attributes.keep_if { |attribute| attribute_names.include?(attribute.name) }
       else
         attributes
+      end
+    end
+
+    def filter_relationships_by_name(relationship_names, relationships)
+      if relationship_names
+        relationships.keep_if { |relationship| relationship_names.include?(relationship) }
+      else
+        relationships
       end
     end
 
