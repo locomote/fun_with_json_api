@@ -80,7 +80,7 @@ module FunWithJsonApi
 
       def build_invalid_relationship_type_payload(relationships_hash)
         deserializer.relationships.map do |relationship|
-          data = relationships_hash.fetch(relationship.name.to_s)['data']
+          data = relationships_hash.fetch(relationship.name.to_s, 'data' => nil)['data']
           if relationship.has_many?
             check_for_invalid_relationship_type_in_collection!(relationship, data)
           else

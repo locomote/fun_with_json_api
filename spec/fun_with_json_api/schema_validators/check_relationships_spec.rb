@@ -123,6 +123,23 @@ describe FunWithJsonApi::SchemaValidators::CheckRelationships do
       end
     end
 
+    context 'when the document does not have an expected relationship' do
+      let(:document) do
+        {
+          'data' => {
+            'id' => '42',
+            'type' => 'examples'
+          }
+        }
+      end
+      let(:relationship) do
+        instance_double('FunWithJsonApi::RelationshipCollection', name: :foobar, has_many?: true)
+      end
+      before { allow(deserializer).to receive(:relationships).and_return([relationship]) }
+
+      it { is_expected.to eq true }
+    end
+
     context 'when the document contains an unsupported relationships' do
       before { allow(deserializer).to receive(:relationships).and_return([]) }
 
