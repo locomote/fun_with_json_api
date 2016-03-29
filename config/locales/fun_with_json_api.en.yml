@@ -11,6 +11,7 @@ en:
       unknown_attribute: 'Request json_api attribute is unsupported by the current endpoint'
       invalid_relationship: 'Request json_api relationship data is invalid'
       missing_relationship: 'Unable to find the requested relationship'
+      unknown_relationship: 'Request json_api relationship is unsupported by the current endpoint'
       invalid_boolean_attribute: "Boolean value should only be true, false, or null"
       invalid_date_attribute: "Date value should be in the format YYYY-MM-DD"
       invalid_datetime_attribute: "Datetime value should be a ISO 8601 datetime"
@@ -25,6 +26,7 @@ en:
       resource_id_can_not_be_client_generated: "The current endpoint does not allow you to set an id for a new '%{resource}' resource"
       resource_id_has_already_been_assigned: "The provided id for a new '%{resource}' resource has already been used by another resource: %{id}"
       unknown_attribute_for_resource: "The provided attribute '%{attribute}' can not be assigned to a '%{resource}' resource from the current endpoint"
+      unknown_relationship_for_resource: "The provided relationship '%{relationship}' can not be assigned to a '%{resource}' resource from the current endpoint"
     find_resource_from_document:
       invalid_document: "Expected data to be a Hash or null"
       invalid_document_type: "Expected data type to be a '%{resource}' resource"

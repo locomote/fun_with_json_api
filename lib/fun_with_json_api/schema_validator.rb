@@ -22,6 +22,7 @@ module FunWithJsonApi
       FunWithJsonApi::SchemaValidators::CheckDocumentTypeMatchesResource.call(self)
       FunWithJsonApi::SchemaValidators::CheckDocumentIdMatchesResource.call(self)
       FunWithJsonApi::SchemaValidators::CheckAttributes.call(api_document, deserializer)
+      FunWithJsonApi::SchemaValidators::CheckRelationships.call(api_document, deserializer)
     end
 
     def document_id
