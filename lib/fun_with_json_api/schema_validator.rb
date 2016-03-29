@@ -2,18 +2,18 @@ require 'fun_with_json_api/exception'
 
 module FunWithJsonApi
   class SchemaValidator
-    def self.check(api_document, deserializer, resource)
-      new(api_document, deserializer, resource).check
+    def self.check(document, deserializer, resource)
+      new(document, deserializer, resource).check
     end
 
     private_class_method :new
 
-    attr_reader :api_document
+    attr_reader :document
     attr_reader :deserializer
     attr_reader :resource
 
-    def initialize(api_document, deserializer, resource)
-      @api_document = api_document.deep_stringify_keys
+    def initialize(document, deserializer, resource)
+      @document = document.deep_stringify_keys
       @deserializer = deserializer
       @resource = resource
     end
@@ -21,16 +21,16 @@ module FunWithJsonApi
     def check
       FunWithJsonApi::SchemaValidators::CheckDocumentTypeMatchesResource.call(self)
       FunWithJsonApi::SchemaValidators::CheckDocumentIdMatchesResource.call(self)
-      FunWithJsonApi::SchemaValidators::CheckAttributes.call(api_document, deserializer)
-      FunWithJsonApi::SchemaValidators::CheckRelationships.call(api_document, deserializer)
+      FunWithJsonApi::SchemaValidators::CheckAttributes.call(document, deserializer)
+      FunWithJsonApi::SchemaValidators::CheckRelationships.call(document, deserializer)
     end
 
     def document_id
-      @document_id ||= api_document['data']['id']
+      @document_id ||= document['data']['id']
     end
 
     def document_type
-      @document_type ||= api_document['data']['type']
+      @document_type ||= document['data']['type']
     end
 
     def resource_id

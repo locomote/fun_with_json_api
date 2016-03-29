@@ -6,11 +6,11 @@ module FunWithJsonApi
 
     private_class_method :new
 
-    attr_reader :api_document
+    attr_reader :document
     attr_reader :deserializer
 
-    def initialize(api_document, deserializer)
-      @api_document = api_document.deep_stringify_keys
+    def initialize(document, deserializer)
+      @document = document.deep_stringify_keys
       @deserializer = deserializer
     end
 
@@ -30,11 +30,11 @@ module FunWithJsonApi
     end
 
     def document_id
-      @document_id ||= api_document['data']['id']
+      @document_id ||= document['data']['id']
     end
 
     def document_type
-      @document_type ||= api_document['data']['type']
+      @document_type ||= document['data']['type']
     end
 
     def resource_type
@@ -42,13 +42,13 @@ module FunWithJsonApi
     end
 
     def document_is_valid?
-      api_document.key?('data') && (
-        api_document['data'].is_a?(Hash) || document_is_null_resource?
+      document.key?('data') && (
+        document['data'].is_a?(Hash) || document_is_null_resource?
       )
     end
 
     def document_is_null_resource?
-      api_document['data'].nil?
+      document['data'].nil?
     end
 
     def document_matches_resource_type?
@@ -62,7 +62,7 @@ module FunWithJsonApi
       payload.pointer = '/data'
       payload.detail = document_is_invalid_message
       Exceptions::InvalidDocument.new(
-        "Expected root data element with hash or null: #{api_document.inspect}",
+        "Expected root data element with hash or null: #{document.inspect}",
         payload
       )
     end

@@ -1,20 +1,20 @@
 module FunWithJsonApi
   module SchemaValidators
     class CheckAttributes
-      def self.call(api_document, deserializer)
-        new(api_document, deserializer).call
+      def self.call(document, deserializer)
+        new(document, deserializer).call
       end
 
-      attr_reader :api_document
+      attr_reader :document
       attr_reader :deserializer
 
-      def initialize(api_document, deserializer)
-        @api_document = api_document
+      def initialize(document, deserializer)
+        @document = document
         @deserializer = deserializer
       end
 
       def call
-        attributes = api_document['data'].fetch('attributes', {}).keys
+        attributes = document['data'].fetch('attributes', {}).keys
         unknown = attributes.reject { |attribute| resource_attributes.include?(attribute) }
 
         return true if unknown.empty?

@@ -6,12 +6,12 @@ module FunWithJsonApi
 
     private_class_method :new
 
-    attr_reader :api_document
+    attr_reader :document
     attr_reader :deserializer
     delegate :id_param, :id_param, :resource_class, to: :deserializer
 
-    def initialize(api_document, deserializer)
-      @api_document = api_document.deep_stringify_keys
+    def initialize(document, deserializer)
+      @document = document.deep_stringify_keys
       @deserializer = deserializer
     end
 
@@ -31,11 +31,11 @@ module FunWithJsonApi
     end
 
     def document_ids
-      @document_id ||= api_document['data'].map { |item| item['id'] }
+      @document_id ||= document['data'].map { |item| item['id'] }
     end
 
     def document_types
-      @document_type ||= api_document['data'].map { |item| item['type'] }.uniq
+      @document_type ||= document['data'].map { |item| item['type'] }.uniq
     end
 
     def resource_type
@@ -43,7 +43,7 @@ module FunWithJsonApi
     end
 
     def document_is_valid_collection?
-      api_document.key?('data') && api_document['data'].is_a?(Array)
+      document.key?('data') && document['data'].is_a?(Array)
     end
 
     private
@@ -65,7 +65,7 @@ module FunWithJsonApi
       payload.pointer = '/data'
       payload.detail = 'Expected data to be an Array of resources'
       Exceptions::InvalidDocument.new(
-        "Expected root data element with an Array: #{api_document.inspect}",
+        "Expected root data element with an Array: #{document.inspect}",
         payload
       )
     end
@@ -73,7 +73,7 @@ module FunWithJsonApi
     def build_invalid_document_types_error
       message = 'Expected type for each item to match expected resource type'\
                 ": '#{resource_type}'"
-      payload = api_document['data'].each_with_index.map do |data, index|
+      payload = document['data'].each_with_index.map do |data, index|
         next if data['type'] == resource_type
         ExceptionPayload.new(
           pointer: "/data/#{index}/type",

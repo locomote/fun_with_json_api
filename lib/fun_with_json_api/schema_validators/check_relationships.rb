@@ -1,20 +1,20 @@
 module FunWithJsonApi
   module SchemaValidators
     class CheckRelationships
-      def self.call(api_document, deserializer)
-        new(api_document, deserializer).call
+      def self.call(document, deserializer)
+        new(document, deserializer).call
       end
 
-      attr_reader :api_document
+      attr_reader :document
       attr_reader :deserializer
 
-      def initialize(api_document, deserializer)
-        @api_document = api_document
+      def initialize(document, deserializer)
+        @document = document
         @deserializer = deserializer
       end
 
       def call
-        relationships = api_document['data'].fetch('relationships', {})
+        relationships = document['data'].fetch('relationships', {})
 
         check_for_unknown_relationships! relationships.keys
         check_for_invalid_relationship_type! relationships
