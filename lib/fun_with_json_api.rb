@@ -32,6 +32,11 @@ module FunWithJsonApi
     deserialize(document, deserializer_class, resource, options)
   end
 
+  def sanitize_document(document)
+    document = document.dup.permit!.to_h if document.is_a?(ActionController::Parameters)
+    document.deep_stringify_keys
+  end
+
   def find_resource(document, deserializer_class, options = {})
     # Prepare the deserializer for loading a resource
     deserializer = deserializer_class.create(options.merge(attributes: [], relationships: []))

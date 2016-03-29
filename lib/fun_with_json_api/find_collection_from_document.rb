@@ -11,7 +11,7 @@ module FunWithJsonApi
     delegate :id_param, :id_param, :resource_class, to: :deserializer
 
     def initialize(document, deserializer)
-      @document = document.deep_stringify_keys
+      @document = FunWithJsonApi.sanitize_document(document)
       @deserializer = deserializer
     end
 

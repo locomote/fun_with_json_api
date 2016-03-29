@@ -13,7 +13,7 @@ module FunWithJsonApi
     attr_reader :resource
 
     def initialize(document, deserializer, resource)
-      @document = document.deep_stringify_keys
+      @document = FunWithJsonApi.sanitize_document(document)
       @deserializer = deserializer
       @resource = resource
     end
