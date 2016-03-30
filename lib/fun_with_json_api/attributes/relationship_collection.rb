@@ -1,3 +1,5 @@
+require 'fun_with_json_api/schema_validators/check_collection_is_authorized'
+
 module FunWithJsonApi
   module Attributes
     class RelationshipCollection < FunWithJsonApi::Attribute
@@ -29,11 +31,10 @@ module FunWithJsonApi
         collection = deserializer.load_collection_from_id_values(values)
 
         # Ensure the collection size matches
-        expected_size = values.size
-        result_size = collection.size
-        if result_size != expected_size
-          raise build_missing_relationship_error_from_collection(collection, values)
-        end
+        check_collection_matches_values!(collection, values)
+
+        # Ensure the user is authorized to access the collection
+        check_collection_is_authorized!(collection, values)
 
         # Call ActiceRecord#pluck if it is available
         convert_collection_to_ids(collection)
@@ -70,6 +71,20 @@ module FunWithJsonApi
         if as.to_s != as.to_s.singularize
           raise ArgumentError, "Use a singular relationship as value: {as: :#{as.to_s.singularize}}"
         end
+      end
+
+      def check_collection_matches_values!(collection, values)
+        expected_size = values.size
+        result_size = collection.size
+        if result_size != expected_size
+          raise build_missing_relationship_error_from_collection(collection, values)
+        end
+      end
+
+      def check_collection_is_authorized!(collection, values)
+        SchemaValidators::CheckCollectionIsAuthorised.call(
+          collection, values, deserializer, prefix: "/data/relationships/#{name}/data"
+        )
       end
 
       def convert_collection_to_ids(collection)

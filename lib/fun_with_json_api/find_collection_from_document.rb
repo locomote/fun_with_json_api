@@ -1,3 +1,6 @@
+require 'fun_with_json_api/schema_validators/check_collection_is_authorized'
+require 'fun_with_json_api/schema_validators/check_collection_has_all_members'
+
 module FunWithJsonApi
   class FindCollectionFromDocument
     def self.find(*args)
@@ -27,6 +30,7 @@ module FunWithJsonApi
       # Load resource from id value
       deserializer.load_collection_from_id_values(document_ids).tap do |collection|
         check_collection_contains_all_requested_resources!(collection)
+        check_collection_is_authorised!(collection)
       end
     end
 
@@ -49,10 +53,11 @@ module FunWithJsonApi
     private
 
     def check_collection_contains_all_requested_resources!(collection)
-      if collection.size != document_ids.size
-        collection_ids = deserializer.format_collection_ids(collection)
-        raise build_missing_resources_error(collection_ids)
-      end
+      SchemaValidators::CheckCollectionHasAllMembers.call(collection, document_ids, deserializer)
+    end
+
+    def check_collection_is_authorised!(collection)
+      SchemaValidators::CheckCollectionIsAuthorised.call(collection, document_ids, deserializer)
     end
 
     def check_document_types_match_deserializer!
@@ -83,40 +88,11 @@ module FunWithJsonApi
       Exceptions::InvalidDocumentType.new(message, payload)
     end
 
-    def build_missing_resources_error(collection_ids)
-      payload = document_ids.each_with_index.map do |resource_id, index|
-        build_missing_resource_payload(collection_ids, resource_id, index)
-      end.reject(&:nil?)
-
-      missing_values = document_ids.reject { |value| collection_ids.include?(value.to_s) }
-      message = "Couldn't find #{resource_class} items with "\
-                "#{id_param} in #{missing_values.inspect}"
-      Exceptions::MissingResource.new(message, payload)
-    end
-
-    def build_missing_resource_payload(collection_ids, resource_id, index)
-      unless collection_ids.include?(resource_id)
-        ExceptionPayload.new(
-          pointer: "/data/#{index}/id",
-          detail: missing_resource_message(resource_id)
-        )
-      end
-    end
-
     def document_type_does_not_match_endpoint_message(type)
       I18n.t(
         :invalid_document_type,
         type: type,
         resource: resource_type,
-        scope: 'fun_with_json_api.find_collection_from_document'
-      )
-    end
-
-    def missing_resource_message(resource_id)
-      I18n.t(
-        :missing_resource,
-        resource: resource_type,
-        resource_id: resource_id,
         scope: 'fun_with_json_api.find_collection_from_document'
       )
     end

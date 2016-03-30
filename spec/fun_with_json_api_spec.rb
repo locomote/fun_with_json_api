@@ -127,6 +127,46 @@ describe FunWithJsonApi do
           comment_ids: [5, 12]
         )
       end
+      it 'allows for relationship collections to be authorized' do
+        post = ARModels::Post.create(id: 1)
+        ARModels::Author.create(id: 9)
+        ARModels::Comment.create(id: 5, contents: 'Blargh')
+        ARModels::Comment.create(id: 12, contents: 'Foobar')
+
+        post_json = {
+          'data': {
+            'type': 'posts',
+            'id': '1',
+            'attributes': {
+              'title': 'Rails is Omakase',
+              'body': 'This is my post body'
+            },
+            'relationships': {
+              'author': {
+                'data': { 'type': 'person', 'id': '9' }
+              },
+              'comments': {
+                'data': [
+                  { 'type': 'comments', 'id': '5' },
+                  { 'type': 'comments', 'id': '12' }
+                ]
+              }
+            }
+          }
+        }
+
+        expect do
+          described_class.deserialize(
+            post_json,
+            ARModels::PostDeserializer,
+            post,
+            comments: { resource_authorizer: ->(comment) { comment.contents == 'Foobar' } }
+          )
+        end.to raise_error(FunWithJsonApi::Exceptions::UnauthorisedResource) do |e|
+          expect(e.payload.size).to eq 1
+          expect(e.payload.first.pointer).to eq '/data/relationships/comments/data/0/id'
+        end
+      end
     end
   end
 

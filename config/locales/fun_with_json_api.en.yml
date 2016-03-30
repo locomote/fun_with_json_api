@@ -7,6 +7,7 @@ en:
       illegal_client_generated_identifier: 'Request json_api attempted to set an unsupported client-generated id'
       invalid_document_type: 'Request json_api data type does not match endpoint'
       missing_resource: 'Unable to find the requested resource'
+      unauthorized_resource: 'Unable to access the requested resource'
       invalid_attribute: 'Request json_api attribute data is invalid'
       unknown_attribute: 'Request json_api attribute is unsupported by the current endpoint'
       invalid_relationship: 'Request json_api relationship data is invalid'
@@ -38,3 +39,4 @@ en:
       invalid_document: "Expected data to be a Array of '%{resource}' resources"
       invalid_document_type: "Expected '%{type}' to be a '%{resource}' resource"
       missing_resource: "Unable to find '%{resource}' with matching id: '%{resource_id}'"
+      unauthorized_resource: "Unable to assign the requested '%{resource}' (%{resource_id}) to the current resource"

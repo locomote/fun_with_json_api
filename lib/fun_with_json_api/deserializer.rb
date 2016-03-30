@@ -6,6 +6,13 @@ module FunWithJsonApi
   class Deserializer
     extend FunWithJsonApi::DeserializerClassMethods
 
+    # Fake resource_authorizer that always returns 'authorised'
+    class ResourceAuthorizerDummy
+      def call(_)
+        true
+      end
+    end
+
     # Creates a new instance of a
     def self.create(options = {})
       new(options)
@@ -16,7 +23,6 @@ module FunWithJsonApi
 
     attr_reader :id_param
     attr_reader :type
-    attr_reader :resource_class
 
     attr_reader :attributes
 
@@ -25,6 +31,7 @@ module FunWithJsonApi
       @type = options.fetch(:type) { self.class.type }
       @resource_class = options[:resource_class]
       @resource_collection = options[:resource_collection] if @type
+      @resource_authorizer = options[:resource_authorizer]
       load_attributes_from_options(options)
       load_relationships_from_options(options)
     end
@@ -57,6 +64,10 @@ module FunWithJsonApi
 
     def resource_collection
       @resource_collection ||= resource_class
+    end
+
+    def resource_authorizer
+      @resource_authorizer ||= ResourceAuthorizerDummy.new
     end
 
     def relationships

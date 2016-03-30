@@ -495,12 +495,54 @@ describe FunWithJsonApi::Deserializer do
         end.create
       end
 
-      it 'finds a resource by the defined id_param and returns the resource id' do
-        author_a = ARModels::Author.create(id: 1, code: 'foobar')
-        author_b = ARModels::Author.create(id: 2, code: 'blargh')
-        expect(deserializer.parse_example_ids(%w(foobar blargh))).to eq(
-          [author_a.id, author_b.id]
-        )
+      context 'with multiple resources' do
+        let!(:author_a) { ARModels::Author.create(id: 1, code: 'foobar') }
+        let!(:author_b) { ARModels::Author.create(id: 2, code: 'blargh') }
+
+        context 'when all resources are authorised' do
+          before do
+            resource_authorizer = double(:resource_authorizer)
+            allow(resource_authorizer).to receive(:call).and_return(true)
+            allow(deserializer.relationship_for(:examples).deserializer).to(
+              receive(:resource_authorizer).and_return(resource_authorizer)
+            )
+          end
+
+          it 'finds a resource by the defined id_param and returns the resource id' do
+            expect(deserializer.parse_example_ids(%w(foobar blargh))).to eq(
+              [author_a.id, author_b.id]
+            )
+          end
+        end
+
+        context 'when a resource is not authorised' do
+          before do
+            resource_authorizer = double(:resource_authorizer)
+            allow(resource_authorizer).to receive(:call).and_return(false)
+            allow(resource_authorizer).to receive(:call).with(author_b).and_return(false)
+            allow(resource_authorizer).to receive(:call).with(author_a).and_return(true)
+            allow(deserializer.relationship_for(:examples).deserializer).to(
+              receive(:resource_authorizer).and_return(resource_authorizer)
+            )
+          end
+
+          it 'raises a UnauthorisedResource when unable to find a single resource' do
+            expect do
+              deserializer.parse_example_ids %w(foobar blargh)
+            end.to raise_error(FunWithJsonApi::Exceptions::UnauthorisedResource) do |e|
+              expect(e.payload.size).to eq 1
+
+              payload = e.payload.first
+              expect(payload.status).to eq '403'
+              expect(payload.code).to eq 'unauthorized_resource'
+              expect(payload.title).to eq 'Unable to access the requested resource'
+              expect(payload.pointer).to eq '/data/relationships/examples/data/1/id'
+              expect(payload.detail).to eq(
+                "Unable to assign the requested 'persons' (blargh) to the current resource"
+              )
+            end
+          end
+        end
       end
 
       it 'raises a MissingRelationship when unable to find a single resource' do

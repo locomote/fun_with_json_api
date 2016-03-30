@@ -19,8 +19,41 @@ describe FunWithJsonApi::FindCollectionFromDocument do
               .and_return([resource])
           end
 
-          it 'returns the resource in a array' do
-            expect(subject).to eq [resource]
+          context 'when the resource is authorised' do
+            before do
+              resource_authorizer = double(:resource_authorizer)
+              allow(resource_authorizer).to receive(:call).with(resource).and_return(true)
+              allow(deserializer).to receive(:resource_authorizer).and_return(resource_authorizer)
+            end
+
+            it 'returns the resource in a array' do
+              expect(subject).to eq [resource]
+            end
+          end
+
+          context 'when the resource is unauthorised' do
+            before do
+              resource_authorizer = double(:resource_authorizer)
+              allow(resource_authorizer).to receive(:call).with(resource).and_return(false)
+              allow(deserializer).to receive(:resource_authorizer).and_return(resource_authorizer)
+            end
+
+            it 'raises a UnauthorisedResource error' do
+              expect do
+                subject
+              end.to raise_error(FunWithJsonApi::Exceptions::UnauthorisedResource) do |e|
+                expect(e.payload.size).to eq 1
+
+                payload = e.payload.first
+                expect(payload.status).to eq '403'
+                expect(payload.code).to eq 'unauthorized_resource'
+                expect(payload.title).to eq 'Unable to access the requested resource'
+                expect(payload.detail).to eq(
+                  "Unable to assign the requested 'person' (42) to the current resource"
+                )
+                expect(payload.pointer).to eq '/data/0/id'
+              end
+            end
           end
         end
 
@@ -74,8 +107,53 @@ describe FunWithJsonApi::FindCollectionFromDocument do
               .and_return([resource_a, resource_b, resource_c])
           end
 
-          it 'returns all resources in a array' do
-            expect(subject).to eq [resource_a, resource_b, resource_c]
+          context 'when all resources are authorised' do
+            before do
+              resource_authorizer = double(:resource_authorizer)
+              [resource_a, resource_b, resource_c].each do |resource|
+                allow(resource_authorizer).to receive(:call).with(resource).and_return(true)
+              end
+              allow(deserializer).to receive(:resource_authorizer).and_return(resource_authorizer)
+            end
+
+            it 'returns all resources in a array' do
+              expect(subject).to eq [resource_a, resource_b, resource_c]
+            end
+          end
+
+          context 'when there are unauthorised resources' do
+            before do
+              resource_authorizer = double(:resource_authorizer)
+              allow(resource_authorizer).to receive(:call).and_return(false)
+              allow(resource_authorizer).to receive(:call).with(resource_b).and_return(true)
+              allow(deserializer).to receive(:resource_authorizer).and_return(resource_authorizer)
+            end
+
+            it 'raises a UnauthorisedResource error' do
+              expect do
+                subject
+              end.to raise_error(FunWithJsonApi::Exceptions::UnauthorisedResource) do |e|
+                expect(e.payload.size).to eq 2
+
+                payload = e.payload.first
+                expect(payload.status).to eq '403'
+                expect(payload.code).to eq 'unauthorized_resource'
+                expect(payload.title).to eq 'Unable to access the requested resource'
+                expect(payload.detail).to eq(
+                  "Unable to assign the requested 'person' (42) to the current resource"
+                )
+                expect(payload.pointer).to eq '/data/0/id'
+
+                payload = e.payload.second
+                expect(payload.status).to eq '403'
+                expect(payload.code).to eq 'unauthorized_resource'
+                expect(payload.title).to eq 'Unable to access the requested resource'
+                expect(payload.detail).to eq(
+                  "Unable to assign the requested 'person' (44) to the current resource"
+                )
+                expect(payload.pointer).to eq '/data/2/id'
+              end
+            end
           end
         end
 
