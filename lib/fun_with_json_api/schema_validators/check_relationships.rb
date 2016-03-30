@@ -92,14 +92,14 @@ module FunWithJsonApi
       def build_invalid_collection_item_payload(relationship, index)
         ExceptionPayload.new(
           detail: invalid_relationship_type_in_array_message(relationship),
-          pointer: "/data/relationships/#{relationship.name}/#{index}/type"
+          pointer: "/data/relationships/#{relationship.name}/#{index}/data/type"
         )
       end
 
       def build_invalid_relationship_item_payload(relationship)
         ExceptionPayload.new(
           detail: invalid_relationship_type_in_hash_message(relationship),
-          pointer: "/data/relationships/#{relationship.name}/type"
+          pointer: "/data/relationships/#{relationship.name}/data/type"
         )
       end
 

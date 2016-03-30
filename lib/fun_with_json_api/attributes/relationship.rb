@@ -80,7 +80,7 @@ module FunWithJsonApi
       def build_missing_relationship_error(id_value, message = nil)
         message ||= missing_resource_debug_message(id_value)
         payload = ExceptionPayload.new
-        payload.pointer = "/data/relationships/#{name}/id"
+        payload.pointer = "/data/relationships/#{name}/data/id"
         payload.detail = "Unable to find '#{deserializer.type}' with matching id"\
                          ": #{id_value.inspect}"
         Exceptions::MissingRelationship.new(message, payload)

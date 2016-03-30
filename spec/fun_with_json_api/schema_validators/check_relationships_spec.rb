@@ -45,7 +45,7 @@ describe FunWithJsonApi::SchemaValidators::CheckRelationships do
 
               payload = e.payload.first
               expect(payload.code).to eq 'invalid_relationship_type'
-              expect(payload.pointer).to eq '/data/relationships/foobar/type'
+              expect(payload.pointer).to eq '/data/relationships/foobar/data/type'
               expect(payload.title).to eq(
                 'Request json_api relationship type does not match expected resource'
               )
@@ -97,7 +97,7 @@ describe FunWithJsonApi::SchemaValidators::CheckRelationships do
 
               payload = e.payload.first
               expect(payload.code).to eq 'invalid_relationship_type'
-              expect(payload.pointer).to eq '/data/relationships/foobar/0/type'
+              expect(payload.pointer).to eq '/data/relationships/foobar/0/data/type'
               expect(payload.title).to eq(
                 'Request json_api relationship type does not match expected resource'
               )
