@@ -120,7 +120,7 @@ module FunWithJsonApi
           next if collection_ids.include?(resource_id)
 
           ExceptionPayload.new.tap do |payload|
-            payload.pointer = "/data/relationships/#{name}/#{index}/data/id"
+            payload.pointer = "/data/relationships/#{name}/data/#{index}/id"
             payload.detail = "Unable to find '#{deserializer.type}' with matching id"\
                              ": \"#{resource_id}\""
           end
