@@ -35,6 +35,7 @@ en:
       invalid_document: "Expected data to be a Hash or null"
       invalid_document_type: "Expected data type to be a '%{resource}' resource"
       missing_resource: "Unable to find '%{resource}' with matching id: '%{resource_id}'"
+      unauthorized_resource: "Unable to assign the requested '%{resource}' (%{resource_id}) to the current resource"
     find_collection_from_document:
       invalid_document: "Expected data to be a Array of '%{resource}' resources"
       invalid_document_type: "Expected '%{type}' to be a '%{resource}' resource"

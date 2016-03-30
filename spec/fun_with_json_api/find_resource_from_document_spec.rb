@@ -19,10 +19,44 @@ describe FunWithJsonApi::FindResourceFromDocument do
               .and_return(resource)
           end
 
-          it 'returns the resource' do
-            expect(subject).to eq resource
+          context 'when the resource is authorised' do
+            before do
+              resource_authorizer = double(:resource_authorizer)
+              allow(resource_authorizer).to receive(:call).with(resource).and_return(true)
+              allow(deserializer).to receive(:resource_authorizer).and_return(resource_authorizer)
+            end
+
+            it 'returns the resource' do
+              expect(subject).to eq resource
+            end
+          end
+
+          context 'when the resource is unauthorised' do
+            before do
+              resource_authorizer = double(:resource_authorizer)
+              allow(resource_authorizer).to receive(:call).with(resource).and_return(false)
+              allow(deserializer).to receive(:resource_authorizer).and_return(resource_authorizer)
+            end
+
+            it 'raises a UnauthorisedResource error' do
+              expect do
+                subject
+              end.to raise_error(FunWithJsonApi::Exceptions::UnauthorisedResource) do |e|
+                expect(e.payload.size).to eq 1
+
+                payload = e.payload.first
+                expect(payload.status).to eq '403'
+                expect(payload.code).to eq 'unauthorized_resource'
+                expect(payload.title).to eq 'Unable to access the requested resource'
+                expect(payload.detail).to eq(
+                  "Unable to assign the requested 'person' (42) to the current resource"
+                )
+                expect(payload.pointer).to eq '/data/id'
+              end
+            end
           end
         end
+
         context 'when a resource cannot be found' do
           let!(:resource) { double('resource') }
           before do

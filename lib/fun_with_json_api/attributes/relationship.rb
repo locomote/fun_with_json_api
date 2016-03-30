@@ -29,9 +29,11 @@ module FunWithJsonApi
         end
 
         resource = deserializer.load_resource_from_id_value(id_value)
-        return resource.id if resource
+        raise build_missing_relationship_error(id_value) if resource.nil?
 
-        raise build_missing_relationship_error(id_value)
+        check_resource_is_authorized!(resource, id_value)
+
+        resource.id
       end
 
       # rubocop:disable Style/PredicateName
@@ -51,6 +53,12 @@ module FunWithJsonApi
       end
 
       private
+
+      def check_resource_is_authorized!(resource, id_value)
+        SchemaValidators::CheckResourceIsAuthorised.call(
+          resource, id_value, deserializer, prefix: "/data/relationships/#{name}/data"
+        )
+      end
 
       def build_deserializer_from_options
         if @deserializer_class.respond_to?(:call)

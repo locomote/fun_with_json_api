@@ -24,9 +24,7 @@ module FunWithJsonApi
       raise build_invalid_document_type_error unless document_matches_resource_type?
 
       # Load resource from id value
-      deserializer.load_resource_from_id_value(document_id).tap do |resource|
-        raise build_missing_resource_error if resource.nil?
-      end
+      load_resource_and_check!
     end
 
     def document_id
@@ -56,6 +54,15 @@ module FunWithJsonApi
     end
 
     private
+
+    def load_resource_and_check!
+      deserializer.load_resource_from_id_value(document_id).tap do |resource|
+        raise build_missing_resource_error if resource.nil?
+        FunWithJsonApi::SchemaValidators::CheckResourceIsAuthorised.call(
+          resource, document_id, deserializer
+        )
+      end
+    end
 
     def build_invalid_document_error
       payload = ExceptionPayload.new
