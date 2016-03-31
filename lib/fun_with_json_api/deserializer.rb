@@ -24,8 +24,6 @@ module FunWithJsonApi
     attr_reader :id_param
     attr_reader :type
 
-    attr_reader :attributes
-
     def initialize(options = {})
       @id_param = options.fetch(:id_param) { self.class.id_param }
       @type = options.fetch(:type) { self.class.type }
@@ -70,8 +68,16 @@ module FunWithJsonApi
       @resource_authorizer ||= ResourceAuthorizerDummy.new
     end
 
+    def attributes
+      attribute_lookup.values
+    end
+
     def relationships
       relationship_lookup.values
+    end
+
+    def attribute_for(attribute_name)
+      attribute_lookup.fetch(attribute_name)
     end
 
     def relationship_for(resource_name)
@@ -80,10 +86,15 @@ module FunWithJsonApi
 
     private
 
+    attr_reader :attribute_lookup
     attr_reader :relationship_lookup
 
     def load_attributes_from_options(options)
-      @attributes = filter_attributes_by_name(options[:attributes], self.class.attributes)
+      attributes = filter_attributes_by_name(options[:attributes], self.class.attribute_names)
+      @attribute_lookup = {}
+      self.class.build_attributes(attributes).each do |attribute|
+        @attribute_lookup[attribute.name] = attribute
+      end
     end
 
     def load_relationships_from_options(options = {})
@@ -105,7 +116,7 @@ module FunWithJsonApi
 
     def filter_attributes_by_name(attribute_names, attributes)
       if attribute_names
-        attributes.keep_if { |attribute| attribute_names.include?(attribute.name) }
+        attributes.keep_if { |attribute| attribute_names.include?(attribute) }
       else
         attributes
       end

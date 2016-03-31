@@ -11,16 +11,15 @@ module FunWithJsonApi
       end
 
       attr_reader :deserializer_class
-      attr_reader :options
       delegate :type, to: :deserializer
 
       def initialize(name, deserializer_class, options = {})
-        super(name, options)
-        @deserializer_class = deserializer_class
-        @options = options.reverse_merge(
+        options = options.reverse_merge(
           attributes: [],
           relationships: []
         )
+        super(name, options)
+        @deserializer_class = deserializer_class
       end
 
       def call(id_value)

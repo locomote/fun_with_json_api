@@ -2,6 +2,7 @@ module FunWithJsonApi
   class Attribute
     attr_reader :name
     attr_reader :as
+    attr_reader :options
 
     def self.create(name, options = {})
       format = options.fetch(:format, 'string')
@@ -18,6 +19,7 @@ module FunWithJsonApi
 
       @name = name.to_sym
       @as = options.fetch(:as, name).to_sym
+      @options = options
     end
 
     def call(value)

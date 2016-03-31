@@ -12,12 +12,12 @@ module FunWithJsonApi
       delegate :type, to: :deserializer
 
       def initialize(name, deserializer_class, options = {})
-        super(name, options.reverse_merge(as: name.to_s.singularize.to_sym))
-        @deserializer_class = deserializer_class
-        @options = options.reverse_merge(
+        options = options.reverse_merge(
           attributes: [],
           relationships: []
         )
+        super(name, options.reverse_merge(as: name.to_s.singularize.to_sym))
+        @deserializer_class = deserializer_class
 
         check_as_attribute_is_singular!
       end

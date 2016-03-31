@@ -4,7 +4,9 @@ module FunWithJsonApi
   # Provides a basic DSL for defining a FunWithJsonApi::Deserializer
   module DeserializerClassMethods
     def id_param(id_param = nil, format: false)
-      @id_param = id_param.to_sym if id_param
+      lock.synchronize do
+        @id_param = id_param.to_sym if id_param
+      end
       (@id_param || :id).tap do |param|
         if format
           attribute(:id, as: param, format: format) # Create a new id attribute
@@ -13,12 +15,16 @@ module FunWithJsonApi
     end
 
     def type(type = nil)
-      @type = type if type
+      lock.synchronize do
+        @type = type if type
+      end
       @type || type_from_class_name
     end
 
     def resource_class(resource_class = nil)
-      @resource_class = resource_class if resource_class
+      lock.synchronize do
+        @resource_class = resource_class if resource_class
+      end
       @resource_class || type_from_class_name.singularize.classify.constantize
     end
 
@@ -33,8 +39,17 @@ module FunWithJsonApi
       end
     end
 
-    def attributes
-      @attributes ||= []
+    def attribute_names
+      lock.synchronize { attributes.map(&:name) }
+    end
+
+    def build_attributes(names)
+      lock.synchronize do
+        names.map do |name|
+          attribute = attributes.detect { |rel| rel.name == name }
+          attribute.class.create(attribute.name, attribute.options)
+        end
+      end
     end
 
     # Relationships
@@ -70,17 +85,19 @@ module FunWithJsonApi
     # rubocop:enable Style/PredicateName
 
     def relationship_names
-      relationships.map(&:name)
+      lock.synchronize { relationships.map(&:name) }
     end
 
     def build_relationships(options)
-      options.map do |name, relationship_options|
-        relationship = relationships.detect { |rel| rel.name == name }
-        relationship.class.create(
-          relationship.name,
-          relationship.deserializer_class,
-          relationship_options.reverse_merge(relationship.options)
-        )
+      lock.synchronize do
+        options.map do |name, relationship_options|
+          relationship = relationships.detect { |rel| rel.name == name }
+          relationship.class.create(
+            relationship.name,
+            relationship.deserializer_class,
+            relationship_options.reverse_merge(relationship.options)
+          )
+        end
       end
     end
 
@@ -90,13 +107,17 @@ module FunWithJsonApi
       @lock ||= Mutex.new
     end
 
+    def attributes
+      @attributes ||= []
+    end
+
     def relationships
       @relationships ||= []
     end
 
     def add_parse_attribute_method(attribute)
       define_method(attribute.sanitize_attribute_method) do |param_value|
-        attribute.call(param_value)
+        attribute_for(attribute.name).call(param_value)
       end
     end
 

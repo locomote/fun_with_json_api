@@ -6,6 +6,10 @@ Metrics/LineLength:
   Max: 100
   AllowURI: true
 
+Metrics/ModuleLength:
+  Exclude:
+    - 'lib/fun_with_json_api/deserializer_class_methods.rb'
+
 Style/Documentation:
   Enabled: false
 
