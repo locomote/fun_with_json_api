@@ -25,9 +25,11 @@ module FunWithJsonApi
     # Attributes
 
     def attribute(name, options = {})
-      Attribute.create(name, options).tap do |attribute|
-        add_parse_attribute_method(attribute)
-        attributes << attribute
+      lock.synchronize do
+        Attribute.create(name, options).tap do |attribute|
+          add_parse_attribute_method(attribute)
+          attributes << attribute
+        end
       end
     end
 
@@ -38,26 +40,30 @@ module FunWithJsonApi
     # Relationships
 
     def belongs_to(name, deserializer_class_or_callable, options = {})
-      Attributes::Relationship.create(
-        name,
-        deserializer_class_or_callable,
-        options
-      ).tap do |relationship|
-        add_parse_resource_method(relationship)
-        relationships << relationship
+      lock.synchronize do
+        Attributes::Relationship.create(
+          name,
+          deserializer_class_or_callable,
+          options
+        ).tap do |relationship|
+          add_parse_resource_method(relationship)
+          relationships << relationship
+        end
       end
     end
 
     # rubocop:disable Style/PredicateName
 
     def has_many(name, deserializer_class_or_callable, options = {})
-      Attributes::RelationshipCollection.create(
-        name,
-        deserializer_class_or_callable,
-        options
-      ).tap do |relationship|
-        add_parse_resource_method(relationship)
-        relationships << relationship
+      lock.synchronize do
+        Attributes::RelationshipCollection.create(
+          name,
+          deserializer_class_or_callable,
+          options
+        ).tap do |relationship|
+          add_parse_resource_method(relationship)
+          relationships << relationship
+        end
       end
     end
 
@@ -79,6 +85,10 @@ module FunWithJsonApi
     end
 
     private
+
+    def lock
+      @lock ||= Mutex.new
+    end
 
     def relationships
       @relationships ||= []
