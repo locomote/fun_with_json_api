@@ -7,6 +7,7 @@ describe FunWithJsonApi do
       \A([0-9]+) # major
       \.([0-9]+) # minor
       \.([0-9]+) # patch
+      (?:\.([0-9]+))?\z # fix
       (?:-([0-9A-Za-z-]+(?:\.[0-9a-z-]+)*))? # build
       (?:\+[0-9a-z-]+)?\z # tag
     /x
