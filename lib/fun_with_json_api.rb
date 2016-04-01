@@ -6,6 +6,7 @@ require 'fun_with_json_api/deserializer'
 require 'fun_with_json_api/schema_validator'
 require 'fun_with_json_api/find_collection_from_document'
 require 'fun_with_json_api/find_resource_from_document'
+require 'fun_with_json_api/collection_manager'
 
 # Makes working with JSON:API fun!
 module FunWithJsonApi
