@@ -13,51 +13,58 @@ module FunWithJsonApi
       @deserializer = deserializer_class.create(deserializer_options)
     end
 
-    # Loads a collection from the document
-    # Use this method when implementinog a CollectionManager
-    def load_collection(document)
-      FunWithJsonApi::FindCollectionFromDocument.find(document, deserializer)
+    # Inserts a single record into a collection
+    # Must return true for a successful update, or return false for any failures
+    def insert_record(_record)
+      raise build_relationship_not_supported_exception(
+        "Override #{self.class.name}#insert_record",
+        insert_not_supported_message
+      )
     end
 
-    # Inserts all records from a document into the parent resource
-    # Either provide a block method that adds an individual item or override this method
+    # Removes a single record into a collection
+    # Must return true for a successful update, or return false for any failures
+    def remove_record(_record)
+      raise build_relationship_not_supported_exception(
+        "Override #{self.class.name}#remove_record",
+        remove_not_supported_message
+      )
+    end
+
+    # Inserts all records from a collection into the parent resource
     #
-    # The block will be provided with a resource and must return true,
-    # or an exception with a payload will be raised after all items have been iterated through
+    # Will attempt to call `insert_record` for each item in the `collection`.
+    # If false is received for any `insert_record` call, an exception with a payload will be raised
+    # after all items have been iterated through
     #
     # You need to reverse all changes made in the event of an exception,
     # wrapping an an ActiveRecord::Base.transaction block will usually work
-    def insert_records(document, failure_message_or_callable = nil, &block)
-      # Action is not supported unless overridden, or a block is defined
-      unless block_given?
-        raise build_relationship_not_supported_exception(
-          "Override #{self.class.name}#insert_records or supply a block",
-          insert_not_supported_message
-        )
+    #
+    # Action is not supported unless `insert_records` or the `insert_record` method is overridden
+    def insert_records(collection, failure_message_or_callable = nil)
+      update_collection_items(collection, failure_message_or_callable) do |record|
+        insert_record(record)
       end
-      update_collection_items(load_collection(document), failure_message_or_callable, &block)
     end
 
-    # Removes all records from a document from the parent resource
-    # Either provide a block method that removes an individual item or override this method
+    # Removes all records from a collection into the parent resource
     #
-    # The block will be provided with a resource and must return true,
-    # or an exception with a payload will be raised after all items have been iterated through
+    # Will attempt to call `remove_record` for each item in the `collection`.
+    # If false is received for any `remove_record` call, an exception with a payload will be raised
+    # after all items have been iterated through
     #
     # You need to reverse all changes made in the event of an exception,
     # wrapping an an ActiveRecord::Base.transaction block will usually work
-    def remove_records(document, failure_message_or_callable = nil, &block)
-      # Action is not supported unless overridden, or a block is defined
-      unless block_given?
-        raise build_relationship_not_supported_exception(
-          "Override #{self.class.name}#remove_records or supply a block",
-          remove_not_supported_message
-        )
+    #
+    # Action is not supported unless `remove_records` or the `remove_record` method is overridden
+    def remove_records(collection, failure_message_or_callable = nil)
+      update_collection_items(collection, failure_message_or_callable) do |record|
+        remove_record(record)
       end
-      update_collection_items(load_collection(document), failure_message_or_callable, &block)
     end
 
-    def replace_all_records(_document)
+    # Replaces all records
+    def replace_all_records(_collection)
       # Action is not supported unless overridden
       raise build_relationship_not_supported_exception(
         "Override #{self.class.name}#replace_all_records to implement replace all",

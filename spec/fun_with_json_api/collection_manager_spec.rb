@@ -1,11 +1,13 @@
 require 'spec_helper'
 
 describe FunWithJsonApi::CollectionManager do
-  subject(:instance) { described_class.new(collection, deserializer_class, deserializer_options) }
-  let(:collection) { double('collection') }
-  let(:deserializer_class) { class_double('FunWithJsonApi::Deserializer', type: 'examples') }
+  subject(:instance) do
+    described_class.new(parent_resource, deserializer_class, deserializer_options)
+  end
+  let(:deserializer_class) { class_double('FunWithJsonApi::Deserializer') }
   let(:deserializer_options) { double('deserializer_options') }
   let(:deserializer) { instance_double('FunWithJsonApi::Deserializer', type: 'examples') }
+  let(:parent_resource) { double('parent_resource') }
   before do
     allow(deserializer_class).to receive(:create)
       .with(deserializer_options)
@@ -13,42 +15,35 @@ describe FunWithJsonApi::CollectionManager do
   end
 
   describe '#insert_records' do
-    context 'when a block is provided' do
-      context 'when the block returns true for each item' do
-        it 'loads a collection from the document and invokes the block with each collection item' do
-          document = double('document')
+    context 'when `insert_record` has been overriden' do
+      context 'when `insert_record` returns true for each item' do
+        it 'calls `#insert_item` with each item in the collection' do
           collection = [double('collection_a'), double('collection_b')]
-          expect(
-            FunWithJsonApi::FindCollectionFromDocument
-          ).to receive(:find).with(document, deserializer).and_return(collection)
 
           received_items = []
-          instance.insert_records(document) do |item|
+          allow(instance).to receive(:insert_record) do |item|
             received_items << item
             true
           end
+
+          instance.insert_records(collection)
           expect(received_items).to eq collection
         end
       end
-      context 'when the block returns false for an item' do
+      context 'when `insert_record` returns false for an item' do
         it 'raises a FunWithJsonApi::Exceptions::InvalidResource with a payload for each item' do
-          document = double('document')
           collection = [
             double('collection_a', success?: true),
             double('collection_b', success?: false)
           ]
-          allow(
-            FunWithJsonApi::FindCollectionFromDocument
-          ).to receive(:find).with(document, deserializer).and_return(collection)
           allow(deserializer).to receive(:format_resource_id).with(collection[0]).and_return('id_a')
           allow(deserializer).to receive(:format_resource_id).with(collection[1]).and_return('id_b')
 
+          # Return success from the item
+          allow(instance).to receive(:insert_record, &:success?)
+
           expect do
-            instance.insert_records(
-              document,
-              ->(index) { "Record '#{index}' is invalid" },
-              &:success? # Call success on each collection items
-            )
+            instance.insert_records(collection, ->(index) { "Record '#{index}' is invalid" })
           end.to raise_error(FunWithJsonApi::Exceptions::InvalidResource) do |e|
             expect(e.payload.size).to eq 1
 
@@ -63,14 +58,14 @@ describe FunWithJsonApi::CollectionManager do
       end
     end
 
-    context 'when no block is provided' do
+    context 'when insert_record has not been overridden' do
       it 'raises a RelationshipNotSupported exception' do
-        document = double('document')
+        collection = [double('collection_item')]
         expect do
-          instance.insert_records(document)
+          instance.insert_records(collection)
         end.to raise_error(FunWithJsonApi::Exceptions::RelationshipMethodNotSupported) do |e|
           expect(e.message).to eq(
-            'Override FunWithJsonApi::CollectionManager#insert_records or supply a block'
+            'Override FunWithJsonApi::CollectionManager#insert_record'
           )
           expect(e.payload.size).to eq 1
 
@@ -86,49 +81,42 @@ describe FunWithJsonApi::CollectionManager do
   end
 
   describe '#remove_records' do
-    context 'when a block is provided' do
-      context 'when the block returns true for each item' do
+    context 'when `remove_record` has been overriden' do
+      context 'when `remove_record` returns true for each item' do
         it 'loads a collection from the document and invokes the block with each collection item' do
-          document = double('document')
           collection = [double('collection_a'), double('collection_b')]
-          expect(
-            FunWithJsonApi::FindCollectionFromDocument
-          ).to receive(:find).with(document, deserializer).and_return(collection)
 
           received_items = []
-          instance.remove_records(document) do |item|
+          allow(instance).to receive(:remove_record) do |item|
             received_items << item
             true
           end
+
+          instance.remove_records(collection)
           expect(received_items).to eq collection
         end
       end
-      context 'when the block returns false for an item' do
+      context 'when `remove_record` returns false for an item' do
         it 'raises a FunWithJsonApi::Exceptions::InvalidResource with a payload for each item' do
-          document = double('document')
           collection = [
             double('collection_a', success?: true),
             double('collection_b', success?: false)
           ]
-          allow(
-            FunWithJsonApi::FindCollectionFromDocument
-          ).to receive(:find).with(document, deserializer).and_return(collection)
           allow(deserializer).to receive(:format_resource_id).with(collection[0]).and_return('id_a')
           allow(deserializer).to receive(:format_resource_id).with(collection[1]).and_return('id_b')
 
+          # Return success from the item
+          allow(instance).to receive(:remove_record, &:success?)
+
           expect do
-            instance.remove_records(
-              document,
-              ->(index) { "Record '#{index}' is invalid" },
-              &:success? # Call success on each collection items
-            )
+            instance.remove_records(collection, ->(index) { "Record '#{index}' is bad!" })
           end.to raise_error(FunWithJsonApi::Exceptions::InvalidResource) do |e|
             expect(e.payload.size).to eq 1
 
             payload = e.payload.first
             expect(payload.code).to eq 'invalid_resource'
             expect(payload.title).to eq 'Unable to update the relationship with this resource'
-            expect(payload.detail).to eq "Record 'id_b' is invalid"
+            expect(payload.detail).to eq "Record 'id_b' is bad!"
             expect(payload.pointer).to eq '/data/1/id'
             expect(payload.status).to eq '422'
           end
@@ -136,14 +124,15 @@ describe FunWithJsonApi::CollectionManager do
       end
     end
 
-    context 'when no block is provided' do
+    context 'when `remove_record` has not been implemented' do
       it 'raises a RelationshipNotSupported exception' do
-        document = double('document')
+        collection = [double('collection_item')]
+
         expect do
-          instance.remove_records(document)
+          instance.remove_records(collection)
         end.to raise_error(FunWithJsonApi::Exceptions::RelationshipMethodNotSupported) do |e|
           expect(e.message).to eq(
-            'Override FunWithJsonApi::CollectionManager#remove_records or supply a block'
+            'Override FunWithJsonApi::CollectionManager#remove_record'
           )
           expect(e.payload.size).to eq 1
 
@@ -161,9 +150,9 @@ describe FunWithJsonApi::CollectionManager do
   describe '#replace_all_records' do
     context 'when no block is provided' do
       it 'raises a RelationshipNotSupported exception' do
-        document = double('document')
+        collection = [double('collection_item')]
         expect do
-          instance.replace_all_records(document)
+          instance.replace_all_records(collection)
         end.to raise_error(FunWithJsonApi::Exceptions::RelationshipMethodNotSupported) do |e|
           expect(e.message).to eq(
             'Override FunWithJsonApi::CollectionManager#replace_all_records'\
