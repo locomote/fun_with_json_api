@@ -161,7 +161,7 @@ describe FunWithJsonApi::SchemaValidators::CheckRelationships do
           expect(payload.code).to eq 'unknown_relationship'
           expect(payload.pointer).to eq '/data/relationships/foobar'
           expect(payload.title).to eq(
-            'Request json_api relationship is not handled by the current endpoint'
+            'Request json_api relationship is not recognised by the current endpoint'
           )
           expect(payload.detail).to eq(
             "The provided relationship 'foobar' can not be assigned to a 'examples' resource"\
@@ -193,10 +193,11 @@ describe FunWithJsonApi::SchemaValidators::CheckRelationships do
           expect(payload.code).to eq 'unknown_relationship'
           expect(payload.pointer).to eq '/data/relationships/foobar'
           expect(payload.title).to eq(
-            'Request json_api relationship is not handled by the current endpoint'
+            'Request json_api relationship is not recognised by the current endpoint'
           )
           expect(payload.detail).to eq(
-            "The provided relationship 'foobar' can not be assigned to a 'examples' resource"
+            "The provided relationship 'foobar' can not be directly assigned to a 'examples'"\
+            ' resource'
           )
           expect(payload.status).to eq '400'
         end
