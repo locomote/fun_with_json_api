@@ -6,7 +6,7 @@ module FunWithJsonApi
         payload = Array.wrap(payload).each do |unknown|
           unknown.code ||= 'unknown_relationship'
           unknown.title ||= I18n.t(:unknown_relationship, scope: 'fun_with_json_api.exceptions')
-          unknown.status ||= '422'
+          unknown.status ||= '400'
         end
         super
       end

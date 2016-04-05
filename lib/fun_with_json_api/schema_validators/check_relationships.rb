@@ -1,3 +1,5 @@
+require 'fun_with_json_api/schema_validators/check_relationship_names'
+
 module FunWithJsonApi
   module SchemaValidators
     class CheckRelationships
@@ -16,17 +18,11 @@ module FunWithJsonApi
       def call
         relationships = document['data'].fetch('relationships', {})
 
-        check_for_unknown_relationships! relationships.keys
+        CheckRelationshipNames.call(document, deserializer, relationships.keys)
+
         check_for_invalid_relationship_type! relationships
 
         true
-      end
-
-      def check_for_unknown_relationships!(relationship_keys)
-        unknown = relationship_keys.reject { |rel| resource_relationships.include?(rel) }
-        return if unknown.empty?
-
-        raise build_unknown_relationship_error(unknown)
       end
 
       def check_for_invalid_relationship_type!(relationships_hash)
@@ -52,10 +48,6 @@ module FunWithJsonApi
         return if relationship_data['type'] == relationship.type
 
         build_invalid_relationship_item_payload(relationship)
-      end
-
-      def resource_relationships
-        @resource_relationships ||= deserializer.relationships.map(&:name).map(&:to_s)
       end
 
       private
@@ -100,26 +92,6 @@ module FunWithJsonApi
         ExceptionPayload.new(
           detail: invalid_relationship_type_in_hash_message(relationship),
           pointer: "/data/relationships/#{relationship.name}/data/type"
-        )
-      end
-
-      def build_unknown_relationship_error(unknown_relationships)
-        payload = unknown_relationships.map do |relationship|
-          ExceptionPayload.new(
-            detail: unknown_relationship_error(relationship),
-            pointer: "/data/relationships/#{relationship}"
-          )
-        end
-        message = 'Unknown relationships were provided by endpoint'
-        FunWithJsonApi::Exceptions::UnknownRelationship.new(message, payload)
-      end
-
-      def unknown_relationship_error(relationship)
-        I18n.t(
-          :unknown_relationship_for_resource,
-          relationship: relationship,
-          resource: deserializer.type,
-          scope: 'fun_with_json_api.schema_validators'
         )
       end
     end

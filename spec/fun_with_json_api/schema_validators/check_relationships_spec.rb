@@ -140,26 +140,65 @@ describe FunWithJsonApi::SchemaValidators::CheckRelationships do
       it { is_expected.to eq true }
     end
 
-    context 'when the document contains an unsupported relationships' do
-      before { allow(deserializer).to receive(:relationships).and_return([]) }
+    context 'when the document contains an excluded relationship' do
+      before do
+        deserializer_class = class_double(
+          'FunWithJsonApi::Deserializer',
+          relationship_names: %i(foobar)
+        )
+        allow(deserializer).to receive(:class).and_return(deserializer_class)
+        allow(deserializer).to receive(:relationships).and_return([])
+      end
 
       it 'raises a UnknownRelationship error' do
         expect do
           subject
         end.to raise_error(FunWithJsonApi::Exceptions::UnknownRelationship) do |e|
+          # expect(e.http_status).to eq 403
           expect(e.payload.size).to eq 1
 
           payload = e.payload.first
           expect(payload.code).to eq 'unknown_relationship'
           expect(payload.pointer).to eq '/data/relationships/foobar'
           expect(payload.title).to eq(
-            'Request json_api relationship is unsupported by the current endpoint'
+            'Request json_api relationship is not handled by the current endpoint'
           )
           expect(payload.detail).to eq(
             "The provided relationship 'foobar' can not be assigned to a 'examples' resource"\
             ' from the current endpoint'
           )
-          expect(payload.status).to eq '422'
+          expect(payload.status).to eq '403'
+        end
+      end
+    end
+
+    context 'when the document contains an unknown relationship' do
+      before do
+        deserializer_class = class_double(
+          'FunWithJsonApi::Deserializer',
+          relationship_names: %i(blargh)
+        )
+        allow(deserializer).to receive(:class).and_return(deserializer_class)
+        allow(deserializer).to receive(:relationships).and_return([])
+      end
+
+      it 'raises a UnknownRelationship error' do
+        expect do
+          subject
+        end.to raise_error(FunWithJsonApi::Exceptions::UnknownRelationship) do |e|
+          expect(e.http_status).to eq 400
+          expect(e.payload.size).to eq 1
+
+          payload = e.payload.first
+          expect(payload.code).to eq 'unknown_relationship'
+          expect(payload.pointer).to eq '/data/relationships/foobar'
+          expect(payload.title).to eq(
+            'Request json_api relationship is not handled by the current endpoint'
+          )
+          expect(payload.detail).to eq(
+            "The provided relationship 'foobar' can not be assigned to a 'examples' resource"
+          )
+          expect(payload.status).to eq '400'
         end
       end
     end

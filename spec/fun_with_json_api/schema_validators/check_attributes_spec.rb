@@ -38,7 +38,7 @@ describe FunWithJsonApi::SchemaValidators::CheckAttributes do
           expect(payload.code).to eq 'unknown_attribute'
           expect(payload.pointer).to eq '/data/attributes/foobar'
           expect(payload.title).to eq(
-            'Request json_api attribute is unsupported by the current endpoint'
+            'Request json_api attribute is not valid for the current endpoint'
           )
           expect(payload.detail).to eq(
             "The provided attribute 'foobar' can not be assigned to a 'examples' resource"\
