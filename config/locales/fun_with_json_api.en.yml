@@ -14,6 +14,7 @@ en:
       invalid_relationship: 'Request json_api relationship data is invalid'
       missing_relationship: 'Unable to find the requested relationship'
       unknown_relationship: 'Request json_api relationship is not recognised by the current endpoint'
+      unauthorized_relationship: Request json_api relationship can not be updated by the current endpoint
       invalid_relationship_type: 'Request json_api relationship type does not match expected resource'
       invalid_boolean_attribute: "Boolean value should only be true, false, or null"
       invalid_date_attribute: "Date value should be in the format YYYY-MM-DD"
@@ -33,8 +34,8 @@ en:
       resource_id_has_already_been_assigned: "The provided id for a new '%{resource}' resource has already been used by another resource: %{id}"
       unknown_attribute_for_resource: "The provided attribute '%{attribute}' can not be assigned to a '%{resource}' resource"
       forbidden_attribute_for_request: "The provided attribute '%{attribute}' can not be assigned to a '%{resource}' resource from the current endpoint"
-      unknown_relationship_for_resource: "The provided relationship '%{relationship}' can not be directly assigned to a '%{resource}' resource"
-      forbidden_relationship_for_request: "The provided relationship '%{relationship}' can not be assigned to a '%{resource}' resource from the current endpoint"
+      unknown_relationship_for_resource: "The provided relationship '%{relationship}' can not be directly assigned to a '%{resource}' resource, or is an unknown relationship"
+      unauthorized_relationship: "The provided relationship '%{relationship}' can not be assigned to a '%{resource}' resource from the current endpoint"
     find_resource_from_document:
       invalid_document: "Expected data to be a Hash or null"
       invalid_document_type: "Expected data type to be a '%{resource}' resource"

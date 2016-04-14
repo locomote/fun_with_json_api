@@ -31,7 +31,7 @@ describe FunWithJsonApi::FindResourceFromDocument do
             end
           end
 
-          context 'when the resource is unauthorised' do
+          context 'when the resource is unauthorized' do
             before do
               resource_authorizer = double(:resource_authorizer)
               allow(resource_authorizer).to receive(:call).with(resource).and_return(false)

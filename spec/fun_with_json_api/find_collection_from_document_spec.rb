@@ -31,7 +31,7 @@ describe FunWithJsonApi::FindCollectionFromDocument do
             end
           end
 
-          context 'when the resource is unauthorised' do
+          context 'when the resource is unauthorized' do
             before do
               resource_authorizer = double(:resource_authorizer)
               allow(resource_authorizer).to receive(:call).with(resource).and_return(false)
@@ -121,7 +121,7 @@ describe FunWithJsonApi::FindCollectionFromDocument do
             end
           end
 
-          context 'when there are unauthorised resources' do
+          context 'when there are unauthorized resources' do
             before do
               resource_authorizer = double(:resource_authorizer)
               allow(resource_authorizer).to receive(:call).and_return(false)

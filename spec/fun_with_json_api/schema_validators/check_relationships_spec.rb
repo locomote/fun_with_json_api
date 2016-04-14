@@ -150,18 +150,18 @@ describe FunWithJsonApi::SchemaValidators::CheckRelationships do
         allow(deserializer).to receive(:relationships).and_return([])
       end
 
-      it 'raises a UnknownRelationship error' do
+      it 'raises a UnauthorizedRelationship error' do
         expect do
           subject
-        end.to raise_error(FunWithJsonApi::Exceptions::UnknownRelationship) do |e|
-          # expect(e.http_status).to eq 403
+        end.to raise_error(FunWithJsonApi::Exceptions::UnauthorizedRelationship) do |e|
+          expect(e.http_status).to eq 403
           expect(e.payload.size).to eq 1
 
           payload = e.payload.first
-          expect(payload.code).to eq 'unknown_relationship'
+          expect(payload.code).to eq 'unauthorized_relationship'
           expect(payload.pointer).to eq '/data/relationships/foobar'
           expect(payload.title).to eq(
-            'Request json_api relationship is not recognised by the current endpoint'
+            'Request json_api relationship can not be updated by the current endpoint'
           )
           expect(payload.detail).to eq(
             "The provided relationship 'foobar' can not be assigned to a 'examples' resource"\
@@ -197,7 +197,7 @@ describe FunWithJsonApi::SchemaValidators::CheckRelationships do
           )
           expect(payload.detail).to eq(
             "The provided relationship 'foobar' can not be directly assigned to a 'examples'"\
-            ' resource'
+            ' resource, or is an unknown relationship'
           )
           expect(payload.status).to eq '400'
         end

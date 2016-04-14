@@ -20,22 +20,17 @@ module FunWithJsonApi
         unknown = relationship_keys.reject { |rel| resource_relationships.include?(rel) }
         return if unknown.empty?
 
-        raise build_unknown_relationship_error(unknown)
+        unauthorised_relationships = unknown.select do |relationship|
+          known_relationships.include?(relationship)
+        end
+        if unauthorised_relationships.any?
+          raise build_unauthorized_relationship_error(unauthorised_relationships)
+        else
+          raise build_unknown_relationship_error(unknown)
+        end
       end
 
       protected
-
-      def build_unknown_relationship_error(unknown_relationships)
-        payload = unknown_relationships.map do |relationship|
-          if known_relationships.include?(relationship)
-            build_forbidden_relationship_payload(relationship)
-          else
-            build_unknown_relationship_payload(relationship)
-          end
-        end
-        message = 'Unknown relationships were provided by endpoint'
-        FunWithJsonApi::Exceptions::UnknownRelationship.new(message, payload)
-      end
 
       def resource_relationships
         @resource_relationships ||= deserializer.relationships.map(&:name).map(&:to_s)
@@ -47,12 +42,27 @@ module FunWithJsonApi
 
       private
 
+      def build_unauthorized_relationship_error(unauthorised_relationships)
+        payload = unauthorised_relationships.map do |relationship|
+          build_unauthorized_relationship_payload(relationship)
+        end
+        message = 'Unauthorized relationships were provided by endpoint'
+        FunWithJsonApi::Exceptions::UnauthorizedRelationship.new(message, payload)
+      end
+
+      def build_unknown_relationship_error(unknown_relationships)
+        payload = unknown_relationships.map do |relationship|
+          build_unknown_relationship_payload(relationship)
+        end
+        message = 'Unknown relationships were provided by endpoint'
+        FunWithJsonApi::Exceptions::UnknownRelationship.new(message, payload)
+      end
+
       # Relationship is known, but not supported by this request
-      def build_forbidden_relationship_payload(relationship)
+      def build_unauthorized_relationship_payload(relationship)
         ExceptionPayload.new(
-          detail: forbidden_relationship_error(relationship),
-          pointer: "/data/relationships/#{relationship}",
-          status: '403'
+          detail: unauthorized_relationship_error(relationship),
+          pointer: "/data/relationships/#{relationship}"
         )
       end
 
@@ -73,9 +83,9 @@ module FunWithJsonApi
         )
       end
 
-      def forbidden_relationship_error(relationship)
+      def unauthorized_relationship_error(relationship)
         I18n.t(
-          :forbidden_relationship_for_request,
+          :unauthorized_relationship,
           relationship: relationship,
           resource: deserializer.type,
           scope: 'fun_with_json_api.schema_validators'
