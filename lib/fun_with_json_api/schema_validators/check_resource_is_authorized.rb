@@ -10,13 +10,13 @@ module FunWithJsonApi
       attr_reader :resource
       attr_reader :resource_id
       attr_reader :deserializer
-      attr_reader :prefix
+      attr_reader :resource_pointer
 
-      def initialize(resource, resource_id, deserializer, prefix: '/data')
+      def initialize(resource, resource_id, deserializer, resource_pointer: '/data')
         @resource = resource
         @resource_id = resource_id
         @deserializer = deserializer
-        @prefix = prefix
+        @resource_pointer = resource_pointer
       end
 
       def call
@@ -24,7 +24,7 @@ module FunWithJsonApi
           raise Exceptions::UnauthorisedResource.new(
             "resource_authorizer method for '#{deserializer.type}' returned a false value",
             ExceptionPayload.new(
-              pointer: "#{prefix}/id",
+              pointer: resource_pointer,
               detail: unauthorized_resource_message
             )
           )

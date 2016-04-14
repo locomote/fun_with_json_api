@@ -153,7 +153,7 @@ describe FunWithJsonApi do
           )
         end.to raise_error(FunWithJsonApi::Exceptions::UnauthorisedResource) do |e|
           expect(e.payload.size).to eq 1
-          expect(e.payload.first.pointer).to eq '/data/relationships/author/data/id'
+          expect(e.payload.first.pointer).to eq '/data/relationships/author'
         end
       end
       it 'allows for relationship collections to be authorized' do
@@ -193,7 +193,7 @@ describe FunWithJsonApi do
           )
         end.to raise_error(FunWithJsonApi::Exceptions::UnauthorisedResource) do |e|
           expect(e.payload.size).to eq 1
-          expect(e.payload.first.pointer).to eq '/data/relationships/comments/data/0/id'
+          expect(e.payload.first.pointer).to eq '/data/relationships/comments/data/0'
         end
       end
     end

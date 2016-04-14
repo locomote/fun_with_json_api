@@ -51,7 +51,7 @@ describe FunWithJsonApi::FindCollectionFromDocument do
                 expect(payload.detail).to eq(
                   "Unable to assign the requested 'person' (42) to the current resource"
                 )
-                expect(payload.pointer).to eq '/data/0/id'
+                expect(payload.pointer).to eq '/data/0'
               end
             end
           end
@@ -80,7 +80,7 @@ describe FunWithJsonApi::FindCollectionFromDocument do
               expect(payload.code).to eq 'missing_resource'
               expect(payload.title).to eq 'Unable to find the requested resource'
               expect(payload.detail).to eq "Unable to find 'person' with matching id: '42'"
-              expect(payload.pointer).to eq '/data/0/id'
+              expect(payload.pointer).to eq '/data/0'
             end
           end
         end
@@ -142,7 +142,7 @@ describe FunWithJsonApi::FindCollectionFromDocument do
                 expect(payload.detail).to eq(
                   "Unable to assign the requested 'person' (42) to the current resource"
                 )
-                expect(payload.pointer).to eq '/data/0/id'
+                expect(payload.pointer).to eq '/data/0'
 
                 payload = e.payload.second
                 expect(payload.status).to eq '403'
@@ -151,7 +151,7 @@ describe FunWithJsonApi::FindCollectionFromDocument do
                 expect(payload.detail).to eq(
                   "Unable to assign the requested 'person' (44) to the current resource"
                 )
-                expect(payload.pointer).to eq '/data/2/id'
+                expect(payload.pointer).to eq '/data/2'
               end
             end
           end
@@ -184,14 +184,14 @@ describe FunWithJsonApi::FindCollectionFromDocument do
               expect(payload_a.code).to eq 'missing_resource'
               expect(payload_a.title).to eq 'Unable to find the requested resource'
               expect(payload_a.detail).to eq "Unable to find 'person' with matching id: '42'"
-              expect(payload_a.pointer).to eq '/data/0/id'
+              expect(payload_a.pointer).to eq '/data/0'
 
               payload_b = e.payload.last
               expect(payload_b.status).to eq '404'
               expect(payload_b.code).to eq 'missing_resource'
               expect(payload_b.title).to eq 'Unable to find the requested resource'
               expect(payload_b.detail).to eq "Unable to find 'person' with matching id: '44'"
-              expect(payload_b.pointer).to eq '/data/2/id'
+              expect(payload_b.pointer).to eq '/data/2'
             end
           end
         end

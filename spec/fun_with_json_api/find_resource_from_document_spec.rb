@@ -51,7 +51,7 @@ describe FunWithJsonApi::FindResourceFromDocument do
                 expect(payload.detail).to eq(
                   "Unable to assign the requested 'person' (42) to the current resource"
                 )
-                expect(payload.pointer).to eq '/data/id'
+                expect(payload.pointer).to eq '/data'
               end
             end
           end
@@ -76,7 +76,7 @@ describe FunWithJsonApi::FindResourceFromDocument do
               expect(payload.code).to eq 'missing_resource'
               expect(payload.title).to eq 'Unable to find the requested resource'
               expect(payload.detail).to eq "Unable to find 'person' with matching id: '42'"
-              expect(payload.pointer).to eq '/data/id'
+              expect(payload.pointer).to eq '/data'
             end
           end
         end

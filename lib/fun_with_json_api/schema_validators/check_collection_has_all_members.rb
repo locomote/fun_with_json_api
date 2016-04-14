@@ -48,7 +48,7 @@ module FunWithJsonApi
       def build_missing_resource_payload(collection_ids, resource_id, index)
         unless collection_ids.include?(resource_id)
           ExceptionPayload.new(
-            pointer: "#{prefix}/#{index}/id",
+            pointer: "#{prefix}/#{index}",
             detail: missing_resource_message(resource_id)
           )
         end

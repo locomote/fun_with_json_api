@@ -44,7 +44,7 @@ module FunWithJsonApi
       def build_unauthorized_resource_payload(resource, index)
         unless deserializer.resource_authorizer.call(resource)
           ExceptionPayload.new(
-            pointer: "#{prefix}/#{index}/id",
+            pointer: "#{prefix}/#{index}",
             detail: unauthorized_resource_message(collection_ids[index])
           )
         end

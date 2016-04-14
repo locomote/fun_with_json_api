@@ -51,7 +51,7 @@ describe FunWithJsonApi::CollectionManager do
             expect(payload.code).to eq 'invalid_resource'
             expect(payload.title).to eq 'Unable to update the relationship with this resource'
             expect(payload.detail).to eq "Record 'id_b' is invalid"
-            expect(payload.pointer).to eq '/data/1/id'
+            expect(payload.pointer).to eq '/data/1'
             expect(payload.status).to eq '422'
           end
         end
@@ -117,7 +117,7 @@ describe FunWithJsonApi::CollectionManager do
             expect(payload.code).to eq 'invalid_resource'
             expect(payload.title).to eq 'Unable to update the relationship with this resource'
             expect(payload.detail).to eq "Record 'id_b' is bad!"
-            expect(payload.pointer).to eq '/data/1/id'
+            expect(payload.pointer).to eq '/data/1'
             expect(payload.status).to eq '422'
           end
         end
@@ -195,7 +195,7 @@ describe FunWithJsonApi::CollectionManager do
             expect(payload.code).to eq 'invalid_resource'
             expect(payload.title).to eq 'Unable to update the relationship with this resource'
             expect(payload.detail).to eq reason_message
-            expect(payload.pointer).to eq '/data/42/id'
+            expect(payload.pointer).to eq '/data/42'
             expect(payload.status).to eq '422'
           end
         end
@@ -216,7 +216,7 @@ describe FunWithJsonApi::CollectionManager do
             expect(payload.code).to eq 'invalid_resource'
             expect(payload.title).to eq 'Unable to update the relationship with this resource'
             expect(payload.detail).to eq "id_1-#{reason_message}"
-            expect(payload.pointer).to eq '/data/42/id'
+            expect(payload.pointer).to eq '/data/42'
             expect(payload.status).to eq '422'
           end
         end
@@ -235,7 +235,7 @@ describe FunWithJsonApi::CollectionManager do
             expect(payload.detail).to eq(
               "Unable to update relationship with 'examples' resource: 'id_1'"
             )
-            expect(payload.pointer).to eq '/data/42/id'
+            expect(payload.pointer).to eq '/data/42'
             expect(payload.status).to eq '422'
           end
         end
@@ -263,14 +263,14 @@ describe FunWithJsonApi::CollectionManager do
             expect(payload.code).to eq 'invalid_resource'
             expect(payload.title).to eq 'Unable to update the relationship with this resource'
             expect(payload.detail).to eq reason_message
-            expect(payload.pointer).to eq '/data/1/id'
+            expect(payload.pointer).to eq '/data/1'
             expect(payload.status).to eq '422'
 
             payload = e.payload.second
             expect(payload.code).to eq 'invalid_resource'
             expect(payload.title).to eq 'Unable to update the relationship with this resource'
             expect(payload.detail).to eq reason_message
-            expect(payload.pointer).to eq '/data/3/id'
+            expect(payload.pointer).to eq '/data/3'
             expect(payload.status).to eq '422'
           end
         end

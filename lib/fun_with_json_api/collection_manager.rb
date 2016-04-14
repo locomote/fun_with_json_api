@@ -144,7 +144,7 @@ module FunWithJsonApi
     def build_invalid_resource_exception_payload(failed_resources_hash, failure_message_or_callable)
       failed_resources_hash.map do |index, resource|
         failure_message = failure_message_for_resource(resource, failure_message_or_callable)
-        ExceptionPayload.new(detail: failure_message, pointer: "/data/#{index}/id")
+        ExceptionPayload.new(detail: failure_message, pointer: "/data/#{index}")
       end
     end
   end

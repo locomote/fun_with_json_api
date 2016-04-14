@@ -87,7 +87,7 @@ module FunWithJsonApi
       message = "#{deserializer_name} was unable to find resource by '#{deserializer.id_param}'"\
                 ": '#{document_id}'"
       payload = ExceptionPayload.new
-      payload.pointer = '/data/id'
+      payload.pointer = '/data'
       payload.detail = missing_resource_message
       Exceptions::MissingResource.new(message, payload)
     end

@@ -458,7 +458,7 @@ describe FunWithJsonApi::Deserializer do
           expect(payload.status).to eq '404'
           expect(payload.code).to eq 'missing_relationship'
           expect(payload.title).to eq 'Unable to find the requested relationship'
-          expect(payload.pointer).to eq '/data/relationships/example/data/id'
+          expect(payload.pointer).to eq '/data/relationships/example'
           expect(payload.detail).to eq "Unable to find 'persons' with matching id: \"foobar\""
         end
       end
@@ -536,7 +536,7 @@ describe FunWithJsonApi::Deserializer do
               expect(payload.status).to eq '403'
               expect(payload.code).to eq 'unauthorized_resource'
               expect(payload.title).to eq 'Unable to access the requested resource'
-              expect(payload.pointer).to eq '/data/relationships/examples/data/1/id'
+              expect(payload.pointer).to eq '/data/relationships/examples/data/1'
               expect(payload.detail).to eq(
                 "Unable to assign the requested 'persons' (blargh) to the current resource"
               )
@@ -558,7 +558,7 @@ describe FunWithJsonApi::Deserializer do
           expect(payload.status).to eq '404'
           expect(payload.code).to eq 'missing_relationship'
           expect(payload.title).to eq 'Unable to find the requested relationship'
-          expect(payload.pointer).to eq '/data/relationships/examples/data/1/id'
+          expect(payload.pointer).to eq '/data/relationships/examples/data/1'
           expect(payload.detail).to eq "Unable to find 'persons' with matching id: \"blargh\""
         end
       end
@@ -576,14 +576,14 @@ describe FunWithJsonApi::Deserializer do
           expect(payload_a.status).to eq '404'
           expect(payload_a.code).to eq 'missing_relationship'
           expect(payload_a.title).to eq 'Unable to find the requested relationship'
-          expect(payload_a.pointer).to eq '/data/relationships/examples/data/0/id'
+          expect(payload_a.pointer).to eq '/data/relationships/examples/data/0'
           expect(payload_a.detail).to eq "Unable to find 'persons' with matching id: \"foobar\""
 
           payload_b = e.payload.last
           expect(payload_b.status).to eq '404'
           expect(payload_b.code).to eq 'missing_relationship'
           expect(payload_b.title).to eq 'Unable to find the requested relationship'
-          expect(payload_b.pointer).to eq '/data/relationships/examples/data/1/id'
+          expect(payload_b.pointer).to eq '/data/relationships/examples/data/1'
           expect(payload_b.detail).to eq "Unable to find 'persons' with matching id: \"blargh\""
         end
       end
