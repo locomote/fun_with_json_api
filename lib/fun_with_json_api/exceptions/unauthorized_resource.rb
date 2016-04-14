@@ -1,7 +1,7 @@
 module FunWithJsonApi
   module Exceptions
     # Indicates a Resource or Collection item not authorized
-    class UnauthorisedResource < FunWithJsonApi::Exception
+    class UnauthorizedResource < FunWithJsonApi::Exception
       def initialize(message, payload = ExceptionPayload.new)
         payload = Array.wrap(payload).each do |unauthorized|
           unauthorized.code ||= 'unauthorized_resource'

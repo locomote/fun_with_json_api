@@ -46,7 +46,7 @@ en:
       missing_resource: "Unable to find '%{resource}' with matching id: '%{resource_id}'"
       unauthorized_resource: "Unable to assign the requested '%{resource}' (%{resource_id}) to the current resource"
     collection_manager:
-      invalid_resource: "Unable to update relationship with '%{resource}' resource: '%{resource_id}'"
+      invalid_resource: "Unable to assign the requested '%{resource}' (%{resource_id}) to the current resource"
       insert_not_supported: "Unable to insert '%{resource}' items from this endpoint"
       remove_not_supported: "Unable to remove '%{resource}' items from this endpoint"
       replace_all_not_supported: "Unable to replace all '%{resource}' items from this endpoint"

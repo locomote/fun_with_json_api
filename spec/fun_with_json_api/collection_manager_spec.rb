@@ -31,7 +31,7 @@ describe FunWithJsonApi::CollectionManager do
         end
       end
       context 'when `insert_record` returns false for an item' do
-        it 'raises a FunWithJsonApi::Exceptions::InvalidResource with a payload for each item' do
+        it 'raises a FunWithJsonApi::Exceptions::UnauthorizedResource with a payload' do
           collection = [
             double('collection_a', success?: true),
             double('collection_b', success?: false)
@@ -44,15 +44,15 @@ describe FunWithJsonApi::CollectionManager do
 
           expect do
             instance.insert_records(collection, ->(index) { "Record '#{index}' is invalid" })
-          end.to raise_error(FunWithJsonApi::Exceptions::InvalidResource) do |e|
+          end.to raise_error(FunWithJsonApi::Exceptions::UnauthorizedResource) do |e|
             expect(e.payload.size).to eq 1
 
             payload = e.payload.first
-            expect(payload.code).to eq 'invalid_resource'
+            expect(payload.code).to eq 'unauthorized_resource'
             expect(payload.title).to eq 'Unable to update the relationship with this resource'
             expect(payload.detail).to eq "Record 'id_b' is invalid"
             expect(payload.pointer).to eq '/data/1'
-            expect(payload.status).to eq '422'
+            expect(payload.status).to eq '403'
           end
         end
       end
@@ -97,7 +97,7 @@ describe FunWithJsonApi::CollectionManager do
         end
       end
       context 'when `remove_record` returns false for an item' do
-        it 'raises a FunWithJsonApi::Exceptions::InvalidResource with a payload for each item' do
+        it 'raises a FunWithJsonApi::Exceptions::UnauthorizedResource with a payload' do
           collection = [
             double('collection_a', success?: true),
             double('collection_b', success?: false)
@@ -110,15 +110,15 @@ describe FunWithJsonApi::CollectionManager do
 
           expect do
             instance.remove_records(collection, ->(index) { "Record '#{index}' is bad!" })
-          end.to raise_error(FunWithJsonApi::Exceptions::InvalidResource) do |e|
+          end.to raise_error(FunWithJsonApi::Exceptions::UnauthorizedResource) do |e|
             expect(e.payload.size).to eq 1
 
             payload = e.payload.first
-            expect(payload.code).to eq 'invalid_resource'
+            expect(payload.code).to eq 'unauthorized_resource'
             expect(payload.title).to eq 'Unable to update the relationship with this resource'
             expect(payload.detail).to eq "Record 'id_b' is bad!"
             expect(payload.pointer).to eq '/data/1'
-            expect(payload.status).to eq '422'
+            expect(payload.status).to eq '403'
           end
         end
       end
@@ -178,25 +178,25 @@ describe FunWithJsonApi::CollectionManager do
 
     context 'with a invalid resource at an index' do
       let(:resource_index) { '42' }
-      let(:invalid_resource) { double('invalid_resource', id_value: 'id_1') }
+      let(:invalid_resource) { double('unauthorized_resource', id_value: 'id_1') }
 
       context 'with a reason message as a string' do
         let(:reason_message) { Faker::Lorem.sentence }
 
-        it 'raises a InvalidResource exception with the reason message as a detail' do
+        it 'raises a UnauthorizedResource exception with the reason message as a detail' do
           expect do
             instance.send :raise_invalid_resource_exception,
                           { 42 => invalid_resource },
                           reason_message
-          end.to raise_error(FunWithJsonApi::Exceptions::InvalidResource) do |e|
+          end.to raise_error(FunWithJsonApi::Exceptions::UnauthorizedResource) do |e|
             expect(e.payload.size).to eq 1
 
             payload = e.payload.first
-            expect(payload.code).to eq 'invalid_resource'
+            expect(payload.code).to eq 'unauthorized_resource'
             expect(payload.title).to eq 'Unable to update the relationship with this resource'
             expect(payload.detail).to eq reason_message
             expect(payload.pointer).to eq '/data/42'
-            expect(payload.status).to eq '422'
+            expect(payload.status).to eq '403'
           end
         end
       end
@@ -204,39 +204,39 @@ describe FunWithJsonApi::CollectionManager do
       context 'with a reason message as a callable' do
         let(:reason_message) { Faker::Lorem.sentence }
 
-        it 'raises a InvalidResource exception by invoking call with the resource index' do
+        it 'raises a UnauthorizedResource exception by invoking call with the resource index' do
           expect do
             instance.send :raise_invalid_resource_exception,
                           { 42 => invalid_resource },
                           ->(index) { "#{index}-#{reason_message}" }
-          end.to raise_error(FunWithJsonApi::Exceptions::InvalidResource) do |e|
+          end.to raise_error(FunWithJsonApi::Exceptions::UnauthorizedResource) do |e|
             expect(e.payload.size).to eq 1
 
             payload = e.payload.first
-            expect(payload.code).to eq 'invalid_resource'
+            expect(payload.code).to eq 'unauthorized_resource'
             expect(payload.title).to eq 'Unable to update the relationship with this resource'
             expect(payload.detail).to eq "id_1-#{reason_message}"
             expect(payload.pointer).to eq '/data/42'
-            expect(payload.status).to eq '422'
+            expect(payload.status).to eq '403'
           end
         end
       end
 
       context 'with a nil reason message' do
-        it 'raises a InvalidResource exception with a default reason message' do
+        it 'raises a UnauthorizedResource exception with a default reason message' do
           expect do
             instance.send :raise_invalid_resource_exception, { 42 => invalid_resource }, nil
-          end.to raise_error(FunWithJsonApi::Exceptions::InvalidResource) do |e|
+          end.to raise_error(FunWithJsonApi::Exceptions::UnauthorizedResource) do |e|
             expect(e.payload.size).to eq 1
 
             payload = e.payload.first
-            expect(payload.code).to eq 'invalid_resource'
+            expect(payload.code).to eq 'unauthorized_resource'
             expect(payload.title).to eq 'Unable to update the relationship with this resource'
             expect(payload.detail).to eq(
-              "Unable to update relationship with 'examples' resource: 'id_1'"
+              "Unable to assign the requested 'examples' (id_1) to the current resource"
             )
             expect(payload.pointer).to eq '/data/42'
-            expect(payload.status).to eq '422'
+            expect(payload.status).to eq '403'
           end
         end
       end
@@ -253,25 +253,25 @@ describe FunWithJsonApi::CollectionManager do
       context 'with a reason message as a string' do
         let(:reason_message) { Faker::Lorem.sentence }
 
-        it 'raises a InvalidResource exception with a payload for each index' do
+        it 'raises a UnauthorizedResource exception with a payload for each index' do
           expect do
             instance.send :raise_invalid_resource_exception, resource_hash, reason_message
-          end.to raise_error(FunWithJsonApi::Exceptions::InvalidResource) do |e|
+          end.to raise_error(FunWithJsonApi::Exceptions::UnauthorizedResource) do |e|
             expect(e.payload.size).to eq 2
 
             payload = e.payload.first
-            expect(payload.code).to eq 'invalid_resource'
+            expect(payload.code).to eq 'unauthorized_resource'
             expect(payload.title).to eq 'Unable to update the relationship with this resource'
             expect(payload.detail).to eq reason_message
             expect(payload.pointer).to eq '/data/1'
-            expect(payload.status).to eq '422'
+            expect(payload.status).to eq '403'
 
             payload = e.payload.second
-            expect(payload.code).to eq 'invalid_resource'
+            expect(payload.code).to eq 'unauthorized_resource'
             expect(payload.title).to eq 'Unable to update the relationship with this resource'
             expect(payload.detail).to eq reason_message
             expect(payload.pointer).to eq '/data/3'
-            expect(payload.status).to eq '422'
+            expect(payload.status).to eq '403'
           end
         end
       end

@@ -151,7 +151,7 @@ describe FunWithJsonApi do
             post,
             author: { resource_authorizer: ->(author) { author.id != 9 } }
           )
-        end.to raise_error(FunWithJsonApi::Exceptions::UnauthorisedResource) do |e|
+        end.to raise_error(FunWithJsonApi::Exceptions::UnauthorizedResource) do |e|
           expect(e.payload.size).to eq 1
           expect(e.payload.first.pointer).to eq '/data/relationships/author'
         end
@@ -191,7 +191,7 @@ describe FunWithJsonApi do
             post,
             comments: { resource_authorizer: ->(comment) { comment.contents == 'Foobar' } }
           )
-        end.to raise_error(FunWithJsonApi::Exceptions::UnauthorisedResource) do |e|
+        end.to raise_error(FunWithJsonApi::Exceptions::UnauthorizedResource) do |e|
           expect(e.payload.size).to eq 1
           expect(e.payload.first.pointer).to eq '/data/relationships/comments/data/0'
         end

@@ -526,10 +526,10 @@ describe FunWithJsonApi::Deserializer do
             )
           end
 
-          it 'raises a UnauthorisedResource when unable to find a single resource' do
+          it 'raises a UnauthorizedResource when unable to find a single resource' do
             expect do
               deserializer.parse_example_ids %w(foobar blargh)
-            end.to raise_error(FunWithJsonApi::Exceptions::UnauthorisedResource) do |e|
+            end.to raise_error(FunWithJsonApi::Exceptions::UnauthorizedResource) do |e|
               expect(e.payload.size).to eq 1
 
               payload = e.payload.first

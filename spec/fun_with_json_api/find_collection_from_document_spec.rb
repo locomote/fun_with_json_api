@@ -38,10 +38,10 @@ describe FunWithJsonApi::FindCollectionFromDocument do
               allow(deserializer).to receive(:resource_authorizer).and_return(resource_authorizer)
             end
 
-            it 'raises a UnauthorisedResource error' do
+            it 'raises a UnauthorizedResource error' do
               expect do
                 subject
-              end.to raise_error(FunWithJsonApi::Exceptions::UnauthorisedResource) do |e|
+              end.to raise_error(FunWithJsonApi::Exceptions::UnauthorizedResource) do |e|
                 expect(e.payload.size).to eq 1
 
                 payload = e.payload.first
@@ -129,10 +129,10 @@ describe FunWithJsonApi::FindCollectionFromDocument do
               allow(deserializer).to receive(:resource_authorizer).and_return(resource_authorizer)
             end
 
-            it 'raises a UnauthorisedResource error' do
+            it 'raises a UnauthorizedResource error' do
               expect do
                 subject
-              end.to raise_error(FunWithJsonApi::Exceptions::UnauthorisedResource) do |e|
+              end.to raise_error(FunWithJsonApi::Exceptions::UnauthorizedResource) do |e|
                 expect(e.payload.size).to eq 2
 
                 payload = e.payload.first

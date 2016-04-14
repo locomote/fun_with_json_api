@@ -21,7 +21,7 @@ module FunWithJsonApi
 
       def call
         unless deserializer.resource_authorizer.call(resource)
-          raise Exceptions::UnauthorisedResource.new(
+          raise Exceptions::UnauthorizedResource.new(
             "resource_authorizer method for '#{deserializer.type}' returned a false value",
             ExceptionPayload.new(
               pointer: resource_pointer,

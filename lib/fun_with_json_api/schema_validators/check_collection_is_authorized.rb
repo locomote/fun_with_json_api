@@ -29,7 +29,7 @@ module FunWithJsonApi
 
         return if payload.empty?
 
-        raise Exceptions::UnauthorisedResource.new(
+        raise Exceptions::UnauthorizedResource.new(
           "resource_authorizer method for one or more '#{deserializer.type}' items returned false",
           payload
         )
