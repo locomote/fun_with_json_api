@@ -17,7 +17,7 @@ module FunWithJsonApi
         attributes = document['data'].fetch('attributes', {}).keys
 
         unknown = attributes.reject { |attribute| resource_attributes.include?(attribute) }
-        check_attribute_names(attributes) if unknown.any?
+        check_attribute_names(unknown) if unknown.any?
 
         true
       end
