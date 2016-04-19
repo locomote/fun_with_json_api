@@ -1,6 +1,6 @@
 module FunWithJsonApi
   module SchemaValidators
-    class CheckAttributes
+    class CheckAttributeNames
       def self.call(document, deserializer)
         new(document, deserializer).call
       end
@@ -15,11 +15,11 @@ module FunWithJsonApi
 
       def call
         attributes = document['data'].fetch('attributes', {}).keys
+
         unknown = attributes.reject { |attribute| resource_attributes.include?(attribute) }
+        check_attribute_names(attributes) if unknown.any?
 
-        return true if unknown.empty?
-
-        raise build_unknown_attribute_error(unknown)
+        true
       end
 
       def resource_attributes
@@ -32,14 +32,19 @@ module FunWithJsonApi
 
       private
 
-      def build_unknown_attribute_error(unknown_attributes)
-        payload = unknown_attributes.map do |attribute|
-          if known_attributes.include?(attribute)
-            build_forbidden_attribute_payload(attribute)
-          else
-            build_unknown_attribute_payload(attribute)
-          end
+      def check_attribute_names(unknown)
+        unauthorised_attributes = unknown.select do |attribute|
+          known_attributes.include?(attribute)
         end
+        if unauthorised_attributes.any?
+          raise build_forbidden_attribute_error(unauthorised_attributes)
+        else
+          raise build_unknown_attributes_error(unknown)
+        end
+      end
+
+      def build_unknown_attributes_error(attributes)
+        payload = attributes.map { |attribute| build_unknown_attribute_payload(attribute) }
         message = 'Unknown attributes were provided by endpoint'
         FunWithJsonApi::Exceptions::UnknownAttribute.new(message, payload)
       end
@@ -49,6 +54,12 @@ module FunWithJsonApi
           detail: unknown_attribute_error(attribute),
           pointer: "/data/attributes/#{attribute}"
         )
+      end
+
+      def build_forbidden_attribute_error(attributes)
+        payload = attributes.map { |attribute| build_forbidden_attribute_payload(attribute) }
+        message = 'Forbidden attributes were provided by endpoint'
+        FunWithJsonApi::Exceptions::UnauthorizedAttribute.new(message, payload)
       end
 
       def build_forbidden_attribute_payload(attribute)

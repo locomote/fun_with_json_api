@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe FunWithJsonApi::SchemaValidators::CheckAttributes do
+describe FunWithJsonApi::SchemaValidators::CheckAttributeNames do
   describe '.call' do
     let(:document) do
       {
@@ -35,18 +35,18 @@ describe FunWithJsonApi::SchemaValidators::CheckAttributes do
         allow(deserializer).to receive(:attributes).and_return([])
       end
 
-      it 'raises a UnknownAttribute error' do
+      it 'raises a UnauthorizedAttribute error' do
         expect do
           subject
-        end.to raise_error(FunWithJsonApi::Exceptions::UnknownAttribute) do |e|
+        end.to raise_error(FunWithJsonApi::Exceptions::UnauthorizedAttribute) do |e|
           expect(e.http_status).to eq 403
           expect(e.payload.size).to eq 1
 
           payload = e.payload.first
-          expect(payload.code).to eq 'unknown_attribute'
+          expect(payload.code).to eq 'unauthorized_attribute'
           expect(payload.pointer).to eq '/data/attributes/foobar'
           expect(payload.title).to eq(
-            'Request json_api attribute is not recognised by the current endpoint'
+            'Request json_api attribute can not be updated by the current endpoint'
           )
           expect(payload.detail).to eq(
             "The provided attribute 'foobar' can not be assigned to a 'examples' resource"\

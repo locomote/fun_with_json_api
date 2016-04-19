@@ -11,6 +11,7 @@ en:
       unauthorized_resource: 'Unable to access the requested resource'
       invalid_attribute: 'Request json_api attribute data is invalid'
       unknown_attribute: 'Request json_api attribute is not recognised by the current endpoint'
+      unauthorized_attribute: Request json_api attribute can not be updated by the current endpoint
       invalid_relationship: 'Request json_api relationship data is invalid'
       missing_relationship: 'Unable to find the requested relationship'
       unknown_relationship: 'Request json_api relationship is not recognised by the current endpoint'
