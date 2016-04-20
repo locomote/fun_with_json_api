@@ -23,8 +23,8 @@ describe FunWithJsonApi::Railtie do
       controller do
         def index
           respond_to do |format|
-            format.json_api { render text: 'passed' }
-            format.all { render text: 'failed' }
+            format.json_api { render plain: 'passed' }
+            format.all { render plain: 'failed' }
           end
         end
       end

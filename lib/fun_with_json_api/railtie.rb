@@ -24,9 +24,16 @@ module FunWithJsonApi
       end
 
       # Add Middleware for catching parser errors
-      app.config.middleware.insert_before(
-        ActionDispatch::ParamsParser, 'FunWithJsonApi::Middleware::CatchJsonApiParseErrors'
-      )
+      if Rails::VERSION::MAJOR >= 5
+        ActionDispatch::Request.parameter_parsers = parsers::DEFAULT_PARSERS
+        app.config.middleware.use(
+          'FunWithJsonApi::Middleware::CatchJsonApiParseErrors'
+        )
+      else
+        app.config.middleware.insert_before(
+          parsers, 'FunWithJsonApi::Middleware::CatchJsonApiParseErrors'
+        )
+      end
     end
     initializer :register_json_api_renderer do
       ActionController::Renderers.add :json_api do |json, options|
