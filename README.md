@@ -5,6 +5,27 @@ Provides a DSL for converting json_api into active model parameters, with a spri
 [![Build Status](https://travis-ci.org/bmorrall/fun_with_json_api.svg?branch=master)](https://travis-ci.org/bmorrall/fun_with_json_api)
 [![Gem Version](https://badge.fury.io/rb/fun_with_json_api.svg)](https://badge.fury.io/rb/fun_with_json_api)
 
+## Parsing JSON API
+
+FunWithJsonApi registers an `application/vnd.api+json` mime type, and registers a parser with rails.
+
+However, exceptions raised by invalid JSON documents cannot be handled by a Controller, so a
+`FunWithJsonApi::Middleware::CatchJsonApiParseErrors` middleware is added to the stack.
+
+If an invalid document is receive, it will render out an exception response as json_api, only if
+the `Accept` header contains `application/vnd.api+json` or the configuration setting
+`force_render_parse_errors_as_json_api` has been set to true.
+
+You can force all JSON API parse errors to be rended as JSON API, by creating an initializer and
+adding the following code:
+
+```
+# config/initializers/fun_with_json_api
+FunWithJsonApi.configure do |config|
+  config.force_render_parse_errors_as_json_api = true
+end
+```
+
 ## Deserializer
 
 With a User Deserializer:

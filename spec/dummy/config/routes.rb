@@ -53,4 +53,7 @@ Rails.application.routes.draw do
   #     # (app/controllers/admin/products_controller.rb)
   #     resources :products
   #   end
+
+  # Takes a valid json_api request, and echos the payload back as json
+  post :echo, to: 'application#echo'
 end

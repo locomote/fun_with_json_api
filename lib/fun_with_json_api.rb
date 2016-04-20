@@ -1,6 +1,7 @@
 require 'fun_with_json_api/exception'
 require 'fun_with_json_api/attribute'
 
+require 'fun_with_json_api/configuration'
 require 'fun_with_json_api/pre_deserializer'
 require 'fun_with_json_api/deserializer'
 require 'fun_with_json_api/schema_validator'
@@ -13,6 +14,16 @@ module FunWithJsonApi
   MEDIA_TYPE = 'application/vnd.api+json'.freeze
 
   module_function
+
+  attr_writer :configuration
+
+  def configuration
+    @configuration ||= Configuration.new
+  end
+
+  def configure
+    yield(configuration)
+  end
 
   def deserialize(document, deserializer_class, resource = nil, options = {})
     # Prepare the deserializer and the expected config

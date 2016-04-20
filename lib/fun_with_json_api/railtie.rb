@@ -1,12 +1,15 @@
 require 'fun_with_json_api/controller_methods'
 require 'fun_with_json_api/action_controller_extensions/serialization'
+require 'fun_with_json_api/middleware/catch_json_api_parse_errors'
 
 Mime::Type.register FunWithJsonApi::MEDIA_TYPE, :json_api
 
 module FunWithJsonApi
   # Mountable engine for fun with json_api
   class Railtie < Rails::Railtie
-    initializer :register_json_api_mime_type do
+    class ParseError < ::StandardError; end
+
+    initializer :register_json_api_parser do |app|
       parsers =
         if Rails::VERSION::MAJOR >= 5
           ActionDispatch::Http::Parameters
@@ -19,6 +22,11 @@ module FunWithJsonApi
         data = { _json: data } unless data.is_a?(Hash)
         data.with_indifferent_access
       end
+
+      # Add Middleware for catching parser errors
+      app.config.middleware.insert_before(
+        ActionDispatch::ParamsParser, 'FunWithJsonApi::Middleware::CatchJsonApiParseErrors'
+      )
     end
     initializer :register_json_api_renderer do
       ActionController::Renderers.add :json_api do |json, options|
