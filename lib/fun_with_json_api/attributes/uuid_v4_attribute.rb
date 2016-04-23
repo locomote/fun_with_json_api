@@ -6,7 +6,7 @@ module FunWithJsonApi
       # http://blog.arkency.com/2014/10/how-to-start-using-uuid-in-activerecord-with-postgresql/
       UUID_V4_REGEX = /\A[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}\z/
 
-      def call(value)
+      def decode(value)
         return value if value.nil? || value =~ UUID_V4_REGEX
 
         raise build_invalid_attribute_error(value)

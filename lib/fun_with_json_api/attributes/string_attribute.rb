@@ -1,7 +1,7 @@
 module FunWithJsonApi
   module Attributes
     class StringAttribute < Attribute
-      def call(value)
+      def decode(value)
         return value if value.nil? || value.is_a?(String)
 
         raise build_invalid_attribute_error(value)

@@ -1,7 +1,7 @@
 module FunWithJsonApi
   module Attributes
     class DatetimeAttribute < Attribute
-      def call(value)
+      def decode(value)
         DateTime.iso8601(value) if value
       rescue ArgumentError => exception
         raise build_invalid_attribute_error(exception, value)

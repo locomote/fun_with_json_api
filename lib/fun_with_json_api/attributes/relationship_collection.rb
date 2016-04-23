@@ -23,7 +23,7 @@ module FunWithJsonApi
       end
 
       # Expects an array of id values for a nested collection
-      def call(values)
+      def decode(values)
         unless values.nil? || values.is_a?(Array)
           raise build_invalid_relationship_collection_error(values)
         end

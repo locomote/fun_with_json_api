@@ -22,7 +22,7 @@ module FunWithJsonApi
         @deserializer_class = deserializer_class
       end
 
-      def call(id_value)
+      def decode(id_value)
         unless id_value.nil? || !id_value.is_a?(Array)
           raise build_invalid_relationship_error(id_value)
         end

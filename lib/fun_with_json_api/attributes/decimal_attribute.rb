@@ -1,7 +1,7 @@
 module FunWithJsonApi
   module Attributes
     class DecimalAttribute < Attribute
-      def call(value)
+      def decode(value)
         if value
           unless value.to_s =~ /[0-9]+(\.[0-9]+)?/
             raise build_invalid_attribute_error(value)

@@ -117,13 +117,13 @@ module FunWithJsonApi
 
     def add_parse_attribute_method(attribute)
       define_method(attribute.sanitize_attribute_method) do |param_value|
-        attribute_for(attribute.name).call(param_value)
+        attribute_for(attribute.name).decode(param_value)
       end
     end
 
     def add_parse_resource_method(resource)
       define_method(resource.sanitize_attribute_method) do |param_value|
-        relationship_for(resource.name).call(param_value)
+        relationship_for(resource.name).decode(param_value)
       end
     end
 

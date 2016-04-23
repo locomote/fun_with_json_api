@@ -3,7 +3,7 @@ module FunWithJsonApi
     class DateAttribute < Attribute
       DATE_FORMAT = '%Y-%m-%d'.freeze
 
-      def call(value)
+      def decode(value)
         Date.strptime(value, DATE_FORMAT) if value
       rescue ArgumentError => exception
         raise build_invalid_attribute_error(exception, value)

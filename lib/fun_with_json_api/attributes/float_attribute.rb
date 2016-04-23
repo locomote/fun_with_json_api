@@ -1,7 +1,7 @@
 module FunWithJsonApi
   module Attributes
     class FloatAttribute < FunWithJsonApi::Attribute
-      def call(value)
+      def decode(value)
         Float(value.to_s) if value
       rescue ArgumentError => exception
         raise build_invalid_attribute_error(exception, value)

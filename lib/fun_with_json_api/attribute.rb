@@ -22,9 +22,10 @@ module FunWithJsonApi
       @options = options
     end
 
-    def call(value)
+    def decode(value)
       value
     end
+    alias call decode
 
     def sanitize_attribute_method
       :"parse_#{param_value}"
