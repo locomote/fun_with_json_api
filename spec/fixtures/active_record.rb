@@ -56,12 +56,15 @@ module ARModels
 
   class AuthorSerializer < ::ActiveModel::Serializer
     type 'person'
+
     attribute :name
+
     has_many :posts
   end
 
   class AuthorDeserializer < FunWithJsonApi::Deserializer
     type 'person'
+    id_param :code
     resource_class Author
 
     attribute :name

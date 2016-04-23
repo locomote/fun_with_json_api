@@ -17,7 +17,7 @@ describe FunWithJsonApi do
   describe '.deserialize' do
     context 'with an PostDeserializer' do
       it 'converts a json api document into create post params' do
-        ARModels::Author.create(id: 9)
+        ARModels::Author.create(id: 9, code: 'person_9')
         ARModels::Comment.create(id: 5)
         ARModels::Comment.create(id: 12)
 
@@ -30,7 +30,7 @@ describe FunWithJsonApi do
             },
             'relationships': {
               'author': {
-                'data': { 'type': 'person', 'id': '9' }
+                'data': { 'type': 'person', 'id': 'person_9' }
               },
               'comments': {
                 'data': [
@@ -52,7 +52,7 @@ describe FunWithJsonApi do
       end
       it 'converts a json api document into update post params' do
         post = ARModels::Post.create(id: 1)
-        ARModels::Author.create(id: 9)
+        ARModels::Author.create(id: 9, code: 'person_9')
         ARModels::Comment.create(id: 5)
         ARModels::Comment.create(id: 12)
 
@@ -66,7 +66,7 @@ describe FunWithJsonApi do
             },
             'relationships': {
               'author': {
-                'data': { 'type': 'person', 'id': '9' }
+                'data': { 'type': 'person', 'id': 'person_9' }
               },
               'comments': {
                 'data': [
@@ -130,7 +130,7 @@ describe FunWithJsonApi do
       end
       it 'allows for a relationship resource to be authorized' do
         post = ARModels::Post.create(id: 1)
-        ARModels::Author.create(id: 9)
+        ARModels::Author.create(id: 9, code: 'person_9')
 
         post_json = {
           'data': {
@@ -138,7 +138,7 @@ describe FunWithJsonApi do
             'id': '1',
             'relationships': {
               'author': {
-                'data': { 'type': 'person', 'id': '9' }
+                'data': { 'type': 'person', 'id': 'person_9' }
               }
             }
           }
@@ -201,8 +201,8 @@ describe FunWithJsonApi do
 
   describe '.find_resource' do
     context 'with a resource matching the document' do
-      let!(:resource) { ARModels::Author.create(id: 42) }
-      let(:document) { { data: { id: '42', type: 'person' } } }
+      let!(:resource) { ARModels::Author.create(id: 42, code: 'person_42') }
+      let(:document) { { data: { id: 'person_42', type: 'person' } } }
 
       it 'returns the matching resource' do
         actual = described_class.find_resource(document, ARModels::AuthorDeserializer)
@@ -229,9 +229,11 @@ describe FunWithJsonApi do
 
   describe '.find_collection' do
     context 'with resources matching the document' do
-      let!(:resource_a) { ARModels::Author.create(id: 42) }
-      let!(:resource_b) { ARModels::Author.create(id: 43) }
-      let(:document) { { data: [{ id: '42', type: 'person' }, { id: '43', type: 'person' }] } }
+      let!(:resource_a) { ARModels::Author.create(id: 42, code: 'person_42') }
+      let!(:resource_b) { ARModels::Author.create(id: 43, code: 'person_43') }
+      let(:document) do
+        { data: [{ id: 'person_42', type: 'person' }, { id: 'person_43', type: 'person' }] }
+      end
 
       it 'returns all matching resources' do
         actual = described_class.find_collection(document, ARModels::AuthorDeserializer)
