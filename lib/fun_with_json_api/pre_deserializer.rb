@@ -48,10 +48,10 @@ module FunWithJsonApi
     end
 
     def ams_deserializer_class
-      if defined?(ActiveModel::Serializer::Adapter::JsonApi::Deserialization)
-        ActiveModel::Serializer::Adapter::JsonApi::Deserialization
+      if defined?(::ActiveModel::Serializer::Adapter::JsonApi::Deserialization)
+        ::ActiveModel::Serializer::Adapter::JsonApi::Deserialization
       else
-        ActiveModelSerializers::Adapter::JsonApi::Deserialization
+        ::ActiveModelSerializers::Adapter::JsonApi::Deserialization
       end
     end
 

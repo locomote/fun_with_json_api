@@ -7,7 +7,7 @@ module FunWithJsonApi
           options.fetch(:adapter) { options[:adapter] ||= :json_api }
           options.fetch(:serialization_context) do
             options[:serialization_context] ||=
-              ActiveModelSerializers::SerializationContext.new(request)
+              ::ActiveModelSerializers::SerializationContext.new(request)
           end
           serializable_resource = get_serializer(resource, options)
           super(serializable_resource, options)

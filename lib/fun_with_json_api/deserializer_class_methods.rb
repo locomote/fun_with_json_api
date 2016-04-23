@@ -134,7 +134,7 @@ module FunWithJsonApi
       end
 
       resource_class_name = name.demodulize.sub(/Deserializer/, '').underscore
-      if ActiveModelSerializers.config.jsonapi_resource_type == :singular
+      if ::ActiveModelSerializers.config.jsonapi_resource_type == :singular
         resource_class_name.singularize
       else
         resource_class_name.pluralize

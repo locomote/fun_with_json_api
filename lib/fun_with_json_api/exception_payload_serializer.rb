@@ -1,5 +1,5 @@
 module FunWithJsonApi
-  class ExceptionPayloadSerializer < ActiveModel::Serializer
+  class ExceptionPayloadSerializer < ::ActiveModel::Serializer
     attributes :id, :status, :code, :title, :detail, :source
 
     def attributes(*)
