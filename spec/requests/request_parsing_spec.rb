@@ -38,6 +38,23 @@ describe 'Request Parsing', type: :request do
         end
       end
 
+      context 'when the request has a json api accept header with utf-8 charset' do
+        it 'renders a json api invalid document response' do
+          post '/echo',
+               invalid_request_data,
+               'Accept': 'application/vnd.api+json; charset=utf-8',
+               'Content-Type': 'application/vnd.api+json; charset=utf-8'
+
+          expect(response.status).to eq 400
+          expect(JSON.parse(response.body, symbolize_names: true)).to eq(
+            errors: [{
+              code: 'invalid_request_body',
+              title: 'Request json_api body could not be parsed',
+              status: '400'
+            }])
+        end
+      end
+
       context 'when the request does not have a json api accept header' do
         it 'renders a json api invalid document response' do
           invalid_request_data = '{"data":{"id":"42","type":"foobar",}}' # extra comma
