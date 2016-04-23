@@ -1,5 +1,5 @@
 require 'active_model_serializers'
-require 'fun_with_json_api/deserializer_config_builder'
+require 'fun_with_json_api/active_model_serializers/deserializer_config_builder'
 
 module FunWithJsonApi
   # Converts a json_api document into a rails compatible hash.
@@ -56,7 +56,8 @@ module FunWithJsonApi
     end
 
     def ams_deserializer_config
-      @ams_deserializer_config ||= FunWithJsonAPi::DeserializerConfigBuilder.build(deserializer)
+      @ams_deserializer_config ||=
+        FunWithJsonAPi::ActiveModelSerializers::DeserializerConfigBuilder.build(deserializer)
     end
   end
 end
