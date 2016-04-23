@@ -16,10 +16,8 @@ module FunWithJsonApi
           attributes: [],
           relationships: []
         )
-        super(name, options.reverse_merge(as: name.to_s.singularize.to_sym))
+        super(name, options)
         @deserializer_class = deserializer_class
-
-        check_as_attribute_is_singular!
       end
 
       # Expects an array of id values for a nested collection
@@ -50,7 +48,7 @@ module FunWithJsonApi
 
       # User the singular of `as` that is how AMS converts the value
       def param_value
-        :"#{as}_ids"
+        :"#{as.to_s.singularize}_ids"
       end
 
       def deserializer
@@ -65,12 +63,6 @@ module FunWithJsonApi
         else
           @deserializer_class
         end.create(options)
-      end
-
-      def check_as_attribute_is_singular!
-        if as.to_s != as.to_s.singularize
-          raise ArgumentError, "Use a singular relationship as value: {as: :#{as.to_s.singularize}}"
-        end
       end
 
       def check_collection_matches_values!(collection, values)

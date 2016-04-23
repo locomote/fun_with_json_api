@@ -41,20 +41,12 @@ describe FunWithJsonApi::DeserializerClassMethods do
       expect(relationship).to be_kind_of(FunWithJsonApi::Attributes::RelationshipCollection)
 
       expect(relationship.name).to eq :foos
-      expect(relationship.as).to eq :foo
+      expect(relationship.as).to eq :foos
+      expect(relationship.param_value).to eq :foo_ids
       expect(relationship.deserializer).to be_kind_of(foos_deserializer_class)
 
       expect(relationship.deserializer.attributes).to eq []
       expect(relationship.deserializer.relationships).to eq []
-    end
-
-    it 'does not allow pluralized "as" values' do
-      foos_deserializer_class = Class.new(FunWithJsonApi::Deserializer)
-      expect do
-        Class.new(FunWithJsonApi::Deserializer) do
-          has_many :foos, -> { foos_deserializer_class }, as: 'foos'
-        end.relationships
-      end.to raise_error(ArgumentError, 'Use a singular relationship as value: {as: :foo}')
     end
   end
 end
