@@ -28,6 +28,7 @@ en:
       invalid_uuid_v4_attribute: 'UUID value must be RFC 4122 Version 4 UUID (i.e. "f47ac10b-58cc-4372-a567-0e02b2c3d479")'
       collection_method_not_supported: 'The current relationship does not support this action'
     schema_validators:
+      document_id_is_not_a_string_message: data id value must be a JSON String (i.e. "1234")
       document_id_does_not_match_resource: "Expected data id to match resource at endpoint: %{expected}"
       document_type_does_not_match_endpoint: "Expected data type to be a '%{expected}' resource"
       invalid_relationship_type_in_array: "Expected '%{relationship}' relationship to be an Array of '%{relationship_type}' resource identifiers"

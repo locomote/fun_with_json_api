@@ -32,6 +32,27 @@ describe FunWithJsonApi::SchemaValidators::CheckDocumentIdMatchesResource do
           end
         end
       end
+
+      context 'when /data/id is not a string' do
+        before do
+          allow(schema_validator).to receive(:document_id).and_return(42)
+        end
+
+        it 'raises a InvalidDocument error' do
+          expect do
+            subject
+          end.to raise_error(FunWithJsonApi::Exceptions::InvalidDocumentIdentifier) do |e|
+            expect(e.payload.size).to eq 1
+
+            payload = e.payload.first
+            expect(payload.code).to eq 'invalid_document_identifier'
+            expect(payload.pointer).to eq '/data/id'
+            expect(payload.title).to eq 'Request json_api data id is invalid'
+            expect(payload.detail).to eq 'data id value must be a JSON String (i.e. "1234")'
+            expect(payload.status).to eq '409'
+          end
+        end
+      end
     end
 
     context 'when the resource is not persisted' do
@@ -76,6 +97,27 @@ describe FunWithJsonApi::SchemaValidators::CheckDocumentIdMatchesResource do
                 instance_double('FunWithJsonApi::Attribute', name: :id)
               ]
             )
+          end
+
+          context 'when /data/id is not a string' do
+            before do
+              allow(schema_validator).to receive(:document_id).and_return(42)
+            end
+
+            it 'raises a InvalidDocument error' do
+              expect do
+                subject
+              end.to raise_error(FunWithJsonApi::Exceptions::InvalidDocumentIdentifier) do |e|
+                expect(e.payload.size).to eq 1
+
+                payload = e.payload.first
+                expect(payload.code).to eq 'invalid_document_identifier'
+                expect(payload.pointer).to eq '/data/id'
+                expect(payload.title).to eq 'Request json_api data id is invalid'
+                expect(payload.detail).to eq 'data id value must be a JSON String (i.e. "1234")'
+                expect(payload.status).to eq '409'
+              end
+            end
           end
 
           context 'when a resource matching id exists' do
