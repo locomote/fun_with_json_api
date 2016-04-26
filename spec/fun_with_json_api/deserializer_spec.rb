@@ -458,7 +458,7 @@ describe FunWithJsonApi::Deserializer do
           expect(payload.status).to eq '404'
           expect(payload.code).to eq 'missing_relationship'
           expect(payload.title).to eq 'Unable to find the requested relationship'
-          expect(payload.pointer).to eq '/data/relationships/example'
+          expect(payload.pointer).to eq '/data/relationships/example/data'
           expect(payload.detail).to eq "Unable to find 'persons' with matching id: \"foobar\""
         end
       end
@@ -473,7 +473,7 @@ describe FunWithJsonApi::Deserializer do
           expect(payload.status).to eq '400'
           expect(payload.code).to eq 'invalid_relationship'
           expect(payload.title).to eq I18n.t('fun_with_json_api.exceptions.invalid_relationship')
-          expect(payload.pointer).to eq '/data/relationships/example'
+          expect(payload.pointer).to eq '/data/relationships/example/data'
           expect(payload.detail).to be_kind_of(String)
         end
       end
@@ -598,7 +598,7 @@ describe FunWithJsonApi::Deserializer do
           expect(payload.status).to eq '400'
           expect(payload.code).to eq 'invalid_relationship'
           expect(payload.title).to eq I18n.t('fun_with_json_api.exceptions.invalid_relationship')
-          expect(payload.pointer).to eq '/data/relationships/examples'
+          expect(payload.pointer).to eq '/data/relationships/examples/data'
           expect(payload.detail).to be_kind_of(String)
         end
       end

@@ -71,7 +71,7 @@ module FunWithJsonApi
         exception_message = "#{name} relationship should contain a single '#{deserializer.type}'"\
                             ' data hash'
         payload = ExceptionPayload.new
-        payload.pointer = "/data/relationships/#{name}"
+        payload.pointer = "/data/relationships/#{name}/data"
         payload.detail = exception_message
         Exceptions::InvalidRelationship.new(exception_message + ": #{id_value.inspect}", payload)
       end
@@ -79,7 +79,7 @@ module FunWithJsonApi
       def build_missing_relationship_error(id_value, message = nil)
         message ||= missing_resource_debug_message(id_value)
         payload = ExceptionPayload.new
-        payload.pointer = "/data/relationships/#{name}"
+        payload.pointer = "/data/relationships/#{name}/data"
         payload.detail = "Unable to find '#{deserializer.type}' with matching id"\
                          ": #{id_value.inspect}"
         Exceptions::MissingRelationship.new(message, payload)

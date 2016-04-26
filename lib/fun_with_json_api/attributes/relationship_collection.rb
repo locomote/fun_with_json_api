@@ -91,7 +91,7 @@ module FunWithJsonApi
         exception_message = "#{name} relationship should contain a array of"\
                             " '#{deserializer.type}' data"
         payload = ExceptionPayload.new
-        payload.pointer = "/data/relationships/#{name}"
+        payload.pointer = "/data/relationships/#{name}/data"
         payload.detail = exception_message
         Exceptions::InvalidRelationship.new(exception_message + ": #{values.inspect}", payload)
       end
