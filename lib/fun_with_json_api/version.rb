@@ -1,3 +1,3 @@
 module FunWithJsonApi
-  VERSION = '0.0.11.2'.freeze
+  VERSION = '0.0.11.3'.freeze
 end
