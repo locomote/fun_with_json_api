@@ -23,7 +23,9 @@ module FunWithJsonApi
       end
 
       def decode(id_value)
-        unless id_value.nil? || !id_value.is_a?(Array)
+        return nil if id_value.nil?
+
+        if id_value.is_a?(Array)
           raise build_invalid_relationship_error(id_value)
         end
 

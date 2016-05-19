@@ -447,6 +447,10 @@ describe FunWithJsonApi::Deserializer do
         expect(deserializer.parse_example_id('foobar')).to eq author.id
       end
 
+      it 'finds a resource by the defined id_param and returns the resource id' do
+        expect(deserializer.parse_example_id(nil)).to eq nil
+      end
+
       it 'raises a MissingRelationship when unable to find the resource' do
         expect do
           deserializer.parse_example_id 'foobar'
