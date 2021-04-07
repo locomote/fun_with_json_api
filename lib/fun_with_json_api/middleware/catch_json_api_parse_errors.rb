@@ -9,7 +9,7 @@ module FunWithJsonApi
 
       def call(env)
         @app.call(env)
-      rescue ActionDispatch::ParamsParser::ParseError => error
+      rescue ActionDispatch::Http::Parameters::ParseError => error
         if env['CONTENT_TYPE'] =~ JSON_API_REGEX && respond_with_json_api_error?(env)
           build_json_api_parse_error_response
         else

@@ -10,4 +10,8 @@ class ApplicationController < ActionController::Base
   def echo
     render json: params.slice(:data)
   end
+
+  def blah
+    puts ">>>> #{params.inspect}"
+  end
 end

@@ -12,7 +12,7 @@ gemspec
 
 gem 'rake', '< 11.0'
 
-rails_version = ENV['RAILS_VERSION'] || '4.2'
+rails_version = ENV['RAILS_VERSION'] || '5.2'
 if rails_version == 'master'
   gem 'rails', github: 'rails/rails'
 else
@@ -23,7 +23,7 @@ end
 if (ams_version = ENV['AMS_VERSION'])
   gem 'active_model_serializers', "= #{ams_version}"
 elsif (ams_branch = ENV.fetch('AMS_BRANCH', 'master'))
-  gem 'active_model_serializers', github: 'rails-api/active_model_serializers',
+  gem 'active_model_serializers', git: 'https://github.com/rails-api/active_model_serializers.git',
                                   branch: ams_branch
 end
 

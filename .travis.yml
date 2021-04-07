@@ -1,8 +1,8 @@
 language: ruby
 rvm:
-  - 2.2.4
+  - 2.5
+  - 2.6
+  - 2.7
 env:
-  - 'RAILS_VERSION="4.2" AMS_VERSION="0.10.0.rc5"'
-  - 'RAILS_VERSION="master" AMS_VERSION="0.10.0.rc5"'
-  - 'RAILS_VERSION="4.2" AMS_BRANCH=master'
-  - 'RAILS_VERSION="master" AMS_BRANCH=master'
+  - 'RAILS_VERSION="5.1" AMS_VERSION="0.10.7"'
+  - 'RAILS_VERSION="5.2" AMS_VERSION="0.10.12"'
