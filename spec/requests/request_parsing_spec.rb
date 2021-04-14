@@ -5,11 +5,11 @@ describe 'Request Parsing', type: :request do
     request_data = '{"data":{"id":"42","type":"foobar"}}'
 
     post '/echo',
-      params: request_data,
-      headers: {
-        'Accept': 'application/vnd.api+json',
-        'Content-Type': 'application/vnd.api+json'
-      }
+         params: request_data,
+         headers: {
+           'Accept': 'application/vnd.api+json',
+           'Content-Type': 'application/vnd.api+json'
+         }
 
     expect(
       JSON.parse(response.body, symbolize_names: true)
@@ -29,11 +29,11 @@ describe 'Request Parsing', type: :request do
       context 'when the request has a json api accept header' do
         it 'renders a json api invalid document response' do
           post '/echo',
-            params: invalid_request_data,
-            headers: {
-              'Accept': 'application/vnd.api+json',
-              'Content-Type': 'application/vnd.api+json'
-            }
+               params: invalid_request_data,
+               headers: {
+                 'Accept': 'application/vnd.api+json',
+                 'Content-Type': 'application/vnd.api+json'
+               }
 
           expect(response.status).to eq 400
           expect(JSON.parse(response.body, symbolize_names: true)).to eq(
@@ -48,11 +48,11 @@ describe 'Request Parsing', type: :request do
       context 'when the request has a json api accept header with utf-8 charset' do
         it 'renders a json api invalid document response' do
           post '/echo',
-            params: invalid_request_data,
-            headers: {
-              'Accept': 'application/vnd.api+json; charset=utf-8',
-              'Content-Type': 'application/vnd.api+json; charset=utf-8'
-            }
+               params: invalid_request_data,
+               headers: {
+                 'Accept': 'application/vnd.api+json; charset=utf-8',
+                 'Content-Type': 'application/vnd.api+json; charset=utf-8'
+               }
 
           expect(response.status).to eq 400
           expect(JSON.parse(response.body, symbolize_names: true)).to eq(
@@ -68,7 +68,9 @@ describe 'Request Parsing', type: :request do
         it 'renders a json api invalid document response' do
           invalid_request_data = '{"data":{"id":"42","type":"foobar",}}' # extra comma
 
-          post '/echo', params: invalid_request_data, headers: { 'Content-Type': 'application/vnd.api+json' }
+          post '/echo', params: invalid_request_data, headers: {
+            'Content-Type': 'application/vnd.api+json'
+          }
 
           expect(response.status).to eq 400
         end
@@ -85,11 +87,11 @@ describe 'Request Parsing', type: :request do
       context 'when the request has a json api accept header' do
         it 'renders a json api invalid document response' do
           post '/echo',
-            params: invalid_request_data,
-            headers: {
-              'Accept': 'application/vnd.api+json',
-              'Content-Type': 'application/vnd.api+json'
-            }
+               params: invalid_request_data,
+               headers: {
+                 'Accept': 'application/vnd.api+json',
+                 'Content-Type': 'application/vnd.api+json'
+               }
 
           expect(response.status).to eq 400
         end
@@ -98,7 +100,9 @@ describe 'Request Parsing', type: :request do
       context 'when the request does not have a json api accept header' do
         it 'raises a ActionDispatch::ParamsParser::ParseError' do
           expect do
-            post '/echo', params: invalid_request_data, headers: { 'Content-Type': 'application/vnd.api+json' }
+            post '/echo', params: invalid_request_data, headers: {
+              'Content-Type': 'application/vnd.api+json'
+            }
           end.to raise_error(ActionDispatch::Http::Parameters::ParseError)
         end
       end
