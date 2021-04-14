@@ -6,16 +6,15 @@ describe FunWithJsonApi::Railtie do
       controller do
         def index
           # Concatinates /data/id and /data/type from a json_api request
-          render text: "#{params[:data][:id]}:#{params['data']['type']}"
+          render plain: "#{params[:data][:id]}:#{params['data']['type']}"
         end
       end
 
       it 'converts the request body into param values' do
         json_api_data = { data: { id: '42', type: 'foobar' } }
 
-        get :index,
-            json_api_data.as_json,
-            'Content-Type' => 'application/vnd.api+json'
+        request.headers['Content-Type'] = 'application/vnd.api+json'
+        get :index, params: json_api_data.as_json
         expect(response.body).to eq '42:foobar'
       end
     end
@@ -34,7 +33,7 @@ describe FunWithJsonApi::Railtie do
         expect(response.body).to eq 'passed'
       end
       it 'responds to a application/vnd.api+json accept header' do
-        request.env['HTTP_ACCEPT'] = 'application/vnd.api+json'
+        request.headers['HTTP_ACCEPT'] = 'application/vnd.api+json'
         get :index
         expect(response.body).to eq 'passed'
       end

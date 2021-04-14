@@ -18,7 +18,6 @@ require 'fun_with_json_api'
 require 'fixtures/active_record'
 require 'rspec/rails'
 require 'faker'
-require 'factory_girl_rails'
 
 Rails.backtrace_cleaner.remove_silencers!
 
