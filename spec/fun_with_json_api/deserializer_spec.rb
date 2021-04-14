@@ -247,19 +247,19 @@ describe FunWithJsonApi::Deserializer do
     context 'with a decimal format' do
       it 'allows integers' do
         deserializer = deserializer_with_attribute(:example, format: :decimal)
-        expect(deserializer.parse_example(12)).to eq BigDecimal.new('12')
+        expect(deserializer.parse_example(12)).to eq BigDecimal('12')
       end
       it 'allows floats' do
         deserializer = deserializer_with_attribute(:example, format: :decimal)
-        expect(deserializer.parse_example(12.34)).to eq BigDecimal.new('12.34')
+        expect(deserializer.parse_example(12.34)).to eq BigDecimal('12.34')
       end
       it 'allows integer numbers as strings' do
         deserializer = deserializer_with_attribute(:example, format: :decimal)
-        expect(deserializer.parse_example('12')).to eq BigDecimal.new('12')
+        expect(deserializer.parse_example('12')).to eq BigDecimal('12')
       end
       it 'allows floating point numbers as strings' do
         deserializer = deserializer_with_attribute(:example, format: :decimal)
-        expect(deserializer.parse_example('12.30')).to eq BigDecimal.new('12.30')
+        expect(deserializer.parse_example('12.30')).to eq BigDecimal('12.30')
       end
       it 'allows a nil value' do
         deserializer = deserializer_with_attribute(:example, format: :decimal)
@@ -339,7 +339,7 @@ describe FunWithJsonApi::Deserializer do
     context 'with a integer format' do
       it 'allows integer numbers as strings' do
         deserializer = deserializer_with_attribute(:example, format: :integer)
-        expect(deserializer.parse_example('12')).to eq BigDecimal.new('12')
+        expect(deserializer.parse_example('12')).to eq BigDecimal('12')
       end
       it 'allows a nil value' do
         deserializer = deserializer_with_attribute(:example, format: :integer)
