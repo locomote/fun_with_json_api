@@ -2,3 +2,4 @@
 
 - Drop Rails 4 support
 - Add rails 5.1 & 5.2 support [#2518](https://github.com/bmorrall/fun_with_json_api/pull/3)
+- Add ruby 2.7 support (BigDecimal.new removed)

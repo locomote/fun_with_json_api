@@ -6,7 +6,7 @@ module FunWithJsonApi
           unless value.to_s =~ /[0-9]+(\.[0-9]+)?/
             raise build_invalid_attribute_error(value)
           end
-          BigDecimal.new(value.to_s)
+          BigDecimal(value.to_s)
         end
       end
 
